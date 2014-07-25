@@ -37,8 +37,9 @@ class Converter():
     GNS3 Topology Converter Class
     :param topology: Filename of the ini-style topology
     """
-    def __init__(self, topology):
+    def __init__(self, topology, debug=False):
         self._topology = topology
+        self._debug = debug
 
         self.port_id = 1
         self.links = []
@@ -63,7 +64,6 @@ class Converter():
         """
         configspec = resource_stream(__name__, 'configspec')
         config = None
-        debug = False
         try:
             handle = open(self._topology)
             handle.close()
@@ -82,7 +82,7 @@ class Converter():
 
         vtor = Validator()
         res = config.validate(vtor, preserve_errors=True)
-        if res and debug:
+        if res and self._debug:
             print('Validation Passed')
         else:
             for entry in flatten_errors(config, res):

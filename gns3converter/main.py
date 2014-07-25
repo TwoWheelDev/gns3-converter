@@ -43,15 +43,15 @@ def main():
     parser.add_argument('-o', '--output', help='Output the new topology to '
                         'this directory')
     parser.add_argument('topology', help='GNS3 .net topology file')
-    parser.add_argument('--test_func',
-                        help='Test Feature (remove before release)',
+    parser.add_argument('--debug',
+                        help='Enable debugging output',
                         action='store_true')
 
     args = parser.parse_args()
 
     # Create a new instance of the the Converter
     topology_path = os.path.abspath(args.topology)
-    gns3_conv = Converter(topology_path)
+    gns3_conv = Converter(topology_path, args.debug)
     # Read the old topology
     old_top = gns3_conv.read_topology()
 
