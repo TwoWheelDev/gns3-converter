@@ -18,6 +18,7 @@ import os
 import sys
 from ipaddress import ip_address
 import re
+from pkg_resources import resource_stream
 from .ports import MODEL_MATRIX, PORT_TYPES, ADAPTER_MATRIX
 
 # Globals
@@ -37,10 +38,7 @@ class Converter():
     :param topology: Filename of the ini-style topology
     """
     def __init__(self, topology):
-        # TODO: Change to use function if frozen
-        pathname = os.path.dirname(__file__)
-
-        self._configspec = os.path.join(pathname, 'configspec')
+        self._configspec = resource_stream(__name__, 'configspec')
         self._topology = topology
 
         self.port_id = 1
@@ -65,7 +63,7 @@ class Converter():
         :return: config
         """
         config = None
-        debug = False
+        debug = True
         try:
             handle = open(self._topology)
             handle.close()
