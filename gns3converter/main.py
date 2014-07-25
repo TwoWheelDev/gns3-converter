@@ -18,8 +18,7 @@ import os
 import sys
 import shutil
 import argparse
-from gns3converter.converter import Converter
-import gns3converter.version
+from gns3converter import converter, __version__
 
 
 def main():
@@ -39,7 +38,7 @@ def main():
     parser.add_argument('--version',
                         action='version',
                         version='%(prog)s ' +
-                        gns3converter.version.__version__)
+                        __version__)
     parser.add_argument('-o', '--output', help='Output the new topology to '
                         'this directory')
     parser.add_argument('topology', help='GNS3 .net topology file')
@@ -51,7 +50,7 @@ def main():
 
     # Create a new instance of the the Converter
     topology_path = os.path.abspath(args.topology)
-    gns3_conv = Converter(topology_path, args.debug)
+    gns3_conv = converter.Converter(topology_path, args.debug)
     # Read the old topology
     old_top = gns3_conv.read_topology()
 
