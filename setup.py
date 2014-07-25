@@ -8,7 +8,8 @@ setup(
     license='GNU General Public License v3 (GPLv3)',
     author='Daniel Lintott',
     author_email='daniel@serverb.co.uk',
-    description='<TODO>',
+    description='Convert old ini-style GNS3 topologies (<=0.8.7) to the '
+                'newer version 1+ JSON format',
     test_suite='tests',
     install_requires=['configobj'],
     package_data={'gns3converter': ['configspec']},
