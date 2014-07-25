@@ -38,7 +38,6 @@ class Converter():
     :param topology: Filename of the ini-style topology
     """
     def __init__(self, topology):
-        self._configspec = resource_stream(__name__, 'configspec')
         self._topology = topology
 
         self.port_id = 1
@@ -62,14 +61,15 @@ class Converter():
         Read the ini-style topology file using ConfigObj
         :return: config
         """
+        configspec = resource_stream(__name__, 'configspec')
         config = None
-        debug = True
+        debug = False
         try:
             handle = open(self._topology)
             handle.close()
             try:
                 config = ConfigObj(self._topology,
-                                   configspec=self._configspec,
+                                   configspec=configspec,
                                    raise_errors=True,
                                    list_values=False,
                                    encoding='utf-8')
@@ -99,6 +99,8 @@ class Converter():
                 print(section_string, ' = ', error)
                 input('Press ENTER to continue')
                 sys.exit(1)
+
+        configspec.close()
         return config
 
     def process_topology(self, sections, old_top):
