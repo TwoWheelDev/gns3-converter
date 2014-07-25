@@ -23,21 +23,25 @@ import gns3converter.version
 
 
 def main():
+    """
+    Convert the topology
+    :return:
+    """
     print('GNS3 Topology Converter')
 
     parser = argparse.ArgumentParser(
         formatter_class=argparse.RawDescriptionHelpFormatter,
         description='Convert old ini-style GNS3 topologies (<=0.8.7) to the '
-                    'newer\nversion 1+ JSON format',
+        'newer\nversion 1+ JSON format',
         epilog='Copyright (C) 2014 Daniel Lintott and licensed under the '
-               'GPLv3+ license.\n\nPlease report any bugs to: '
-               'https://github.com/dlintott/gns3-converter/issues')
+        'GPLv3+ license.\n\nPlease report any bugs to: '
+        'https://github.com/dlintott/gns3-converter/issues')
     parser.add_argument('--version',
                         action='version',
                         version='%(prog)s ' +
-                                gns3converter.version.__version__)
+                        gns3converter.version.__version__)
     parser.add_argument('-o', '--output', help='Output the new topology to '
-                                               'this directory')
+                        'this directory')
     parser.add_argument('topology', help='GNS3 .net topology file')
     parser.add_argument('--test_func',
                         help='Test Feature (remove before release)',
@@ -118,12 +122,12 @@ def main():
 
         filename = '%s-%s.gns3' % (topology_name, date)
         file_path = os.path.join(topology_dir, filename)
-        with open(file_path, 'w') as f:
-            json.dump(assembled, f, indent=4, sort_keys=True)
+        with open(file_path, 'w') as file:
+            json.dump(assembled, file, indent=4, sort_keys=True)
             print('Your topology has been converted and can found in:\n'
                   '     %s' % topology_dir)
-    except OSError as e:
-        print(e)
+    except OSError as error:
+        print(error)
 
 if __name__ == '__main__':
     main()

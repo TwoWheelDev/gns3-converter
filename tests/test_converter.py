@@ -7,7 +7,11 @@ import tests.data
 
 class TestConverter(unittest.TestCase):
     def setUp(self):
-        self.app = Converter(os.path.abspath('./tests/topology.net'))
+        if os.path.isfile(os.path.abspath('./tests/topology.net')):
+            self._topology = os.path.abspath('./tests/topology.net')
+        else:
+            self._topology = os.path.abspath('./topology.net')
+        self.app = Converter(self._topology)
 
     def test_read_topology(self):
         topology = self.app.read_topology()
