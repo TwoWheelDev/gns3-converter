@@ -242,19 +242,19 @@ class Converter():
             node_temp_label['y'] = -25
             node_temp['x'] = devices[device]['x']
             node_temp['y'] = devices[device]['y']
-            device = {'type': devices[device]['type'],
-                      'chassis': '',
-                      'model': ''}
+            device_info = {'type': devices[device]['type'],
+                           'chassis': '',
+                           'model': ''}
             connections = None
             interfaces = []
 
-            if device['type'] == 'EthernetSwitch':
+            if device_info['type'] == 'EthernetSwitch':
                 node_temp['ports'] = []
 
             if 'model' in devices[device]:
-                device['model'] = devices[device]['model']
+                device_info['model'] = devices[device]['model']
             else:
-                device['model'] = ''
+                device_info['model'] = ''
             npe = None
 
             for item in sorted(devices[device]):
@@ -275,7 +275,7 @@ class Converter():
                         npe = hypervisors[hv_id]['npe']
                     # Device Chassis
                     if 'chassis' in hypervisors[hv_id]:
-                        device['chassis'] = hypervisors[hv_id]['chassis']
+                        device_info['chassis'] = hypervisors[hv_id]['chassis']
 
                 elif item == 'type' and devices[device][item] == 'Router':
                     node_temp['router_id'] = devices[device]['node_id']
@@ -284,7 +284,7 @@ class Converter():
                 elif item == 'console':
                     node_temp_props['console'] = devices[device][item]
                 elif item.startswith('slot'):
-                    if item != 'slot0' and device['model'] != 'c7200':
+                    if item != 'slot0' and device_info['model'] != 'c7200':
                         node_temp_props[item] = devices[device][item]
                 elif item == 'connections':
                     connections = devices[device][item]
@@ -305,13 +305,13 @@ class Converter():
                     self.configs.append({'old': devices[device][item],
                                          'new': new_config})
 
-            if device['type'] == 'Router':
-                node_temp['description'] = device['type'] + ' ' + \
-                    device['model']
-                node_temp['type'] = device['model'].upper()
+            if device_info['type'] == 'Router':
+                node_temp['description'] = device_info['type'] + ' ' + \
+                    device_info['model']
+                node_temp['type'] = device_info['model'].upper()
 
-                node_temp['ports'] = self.calc_mb_ports(device['model'],
-                                                        device['chassis'])
+                node_temp['ports'] = self.calc_mb_ports(device_info['model'],
+                                                        device_info['chassis'])
                 for item in sorted(node_temp_props):
                     if item.startswith('slot'):
                         slot = item[4]
@@ -319,15 +319,15 @@ class Converter():
                             node_temp_props[item], slot))
 
                 # Add default ports to 7200 and 3660
-                if device['model'] == 'c7200' and npe == 'npe-g2':
+                if device_info['model'] == 'c7200' and npe == 'npe-g2':
                     node_temp['ports'].extend(
                         self.calc_slot_ports('C7200-IO-GE-E', 0))
-                elif device['model'] == 'c7200':
+                elif device_info['model'] == 'c7200':
                     node_temp['ports'].extend(
                         self.calc_slot_ports('C7200-IO-2FE', 0))
-                elif device['model'] == 'c3600':
-                    node_temp_props['chassis'] = device['chassis']
-                    if device['chassis'] == '3660':
+                elif device_info['model'] == 'c3600':
+                    node_temp_props['chassis'] = device_info['chassis']
+                    if device_info['chassis'] == '3660':
                         node_temp_props['slot0'] = 'Leopard-2FE'
 
                 # Calculate the router links
@@ -335,9 +335,9 @@ class Converter():
                     self.links.append(self.calc_router_links(connection,
                                                              node_temp))
 
-            elif device['type'] == 'Cloud':
-                node_temp['description'] = device['type']
-                node_temp['type'] = device['type']
+            elif device_info['type'] == 'Cloud':
+                node_temp['description'] = device_info['type']
+                node_temp['type'] = device_info['type']
                 node_temp['ports'] = []
                 node_temp_props['nios'] = []
 
@@ -348,8 +348,8 @@ class Converter():
                     node_temp['ports'].append(port)
                     node_temp_props['nios'].append(nio)
             else:
-                node_temp['description'] = device['type']
-                node_temp['type'] = device['type']
+                node_temp['description'] = device_info['type']
+                node_temp['type'] = device_info['type']
 
             node_temp['label'] = node_temp_label
             node_temp['properties'] = node_temp_props
