@@ -50,7 +50,8 @@ def main():
     args = parser.parse_args()
 
     # Create a new instance of the the Converter
-    gns3_conv = Converter(os.path.abspath(args.topology))
+    topology_path = os.path.abspath(args.topology)
+    gns3_conv = Converter(topology_path)
     # Read the old topology
     old_top = gns3_conv.read_topology()
 
@@ -96,19 +97,20 @@ def main():
             output_dir = os.getcwd()
 
         topology_dir = os.path.join(output_dir, topology_name)
-        config_dir = os.path.join(topology_dir, topology_name + '-files',
-                                  'dynamips', 'configs')
+        old_topology_dir = os.path.dirname(topology_path)
+        new_config_dir = os.path.join(topology_dir, topology_name + '-files',
+                                      'dynamips', 'configs')
         # Prepare the directory structure
         if not os.path.exists(topology_dir):
-            os.makedirs(config_dir)
+            os.makedirs(new_config_dir)
         else:
             print('E: Topology folder for %s already exists, please choose a'
                   ' new name' % topology_name)
             sys.exit(1)
         # Move the config files to the new topology folder
         for config in gns3_conv.configs:
-            old_config_file = os.path.abspath(config['old'])
-            new_config_file = os.path.join(config_dir, config['new'])
+            old_config_file = os.path.join(old_topology_dir, config['old'])
+            new_config_file = os.path.join(new_config_dir, config['new'])
             if os.path.isfile(old_config_file):
                 # Copy and rename the config
                 shutil.copy(old_config_file, new_config_file)

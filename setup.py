@@ -10,5 +10,7 @@ setup(
     author_email='daniel@serverb.co.uk',
     description='<TODO>',
     test_suite='tests',
-    requires=['configobj']
+    install_requires=['configobj'],
+    package_data={'gns3converter': ['configspec']},
+    entry_points={'console_scripts': ['converter = gns3converter.main:main']}
 )
