@@ -1,0 +1,21 @@
+autostart = False
+version = 0.8.6
+[127.0.0.1:7200]
+    workingdir = /tmp
+    udp = 10001
+    [[3660]]
+        image = /home/daniel/GNS3/Images/3660/c3660-jk9o3s-mz.124-19.image
+        idlepc = 0x6056c1ec
+        sparsemem = True
+        chassis = 3660
+    [[ROUTER R1]]
+        model = 3660
+        console = 2103
+        aux = 2503
+        cnfg = configs/R1.cfg
+        f0/0 = SW1 2
+        x = -20.0
+        y = -12.0
+        z = 1.0
+[GNS3-DATA]
+    configs = configs
