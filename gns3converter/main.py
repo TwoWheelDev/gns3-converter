@@ -17,7 +17,7 @@ import os
 import sys
 import shutil
 import argparse
-from gns3converter import converter, __version__
+from gns3converter import Converter, __version__
 
 
 def main():
@@ -49,7 +49,7 @@ def main():
 
     # Create a new instance of the the Converter
     topology_path = os.path.abspath(args.topology)
-    gns3_conv = converter.Converter(topology_path, args.debug)
+    gns3_conv = Converter(topology_path, args.debug)
     # Read the old topology
     old_top = gns3_conv.read_topology()
 
