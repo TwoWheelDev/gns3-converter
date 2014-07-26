@@ -284,7 +284,10 @@ class Converter():
                 elif item == 'console':
                     node_temp_props['console'] = devices[device][item]
                 elif item.startswith('slot'):
-                    if item != 'slot0' and device_info['model'] != 'c7200':
+                    if device_info['model'] == 'c7200':
+                        if item != 'slot0':
+                            node_temp_props[item] = devices[device][item]
+                    else:
                         node_temp_props[item] = devices[device][item]
                 elif item == 'connections':
                     connections = devices[device][item]
