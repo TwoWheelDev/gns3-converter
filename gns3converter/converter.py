@@ -298,9 +298,10 @@ class Converter():
                     (port_def, destination) = self.calc_ethsw_port(
                         item, devices[device][item])
                     node_temp['ports'].append(port_def)
-                    self.links.append(self.calc_link(node_temp['id'],
-                                                     port_def['id'],
-                                                     destination))
+                    self.links.append(
+                        self.calc_link(node_temp['id'], port_def['id'],
+                                       node_temp['ports']['name'], device,
+                                       destination))
                 elif item == 'cnfg':
                     new_config = 'i%s_startup-config.cfg' % node_temp['id']
                     node_temp_props['startup_config'] = new_config
@@ -334,9 +335,10 @@ class Converter():
                         node_temp_props['slot0'] = 'Leopard-2FE'
 
                 # Calculate the router links
-                for connection in sorted(interfaces):
+                for connection in interfaces:
                     self.links.append(self.calc_router_links(connection,
-                                                             node_temp))
+                                                             node_temp,
+                                                             device))
 
             elif device_info['type'] == 'Cloud':
                 node_temp['description'] = device_info['type']
@@ -379,10 +381,15 @@ class Converter():
                 dest_port = link['dest_port']
 
             #Convert dest_dev to destination_node_id
-            (dest_node_id, dest_port_id) = self.convert_destination_to_id(
+            (dest_node, dest_port_id) = self.convert_destination_to_id(
                 link['dest_dev'], dest_port, nodes)
 
-            links.append({'destination_node_id': dest_node_id,
+            desc = 'Link from %s port %s to %s port %s' % \
+                   (link['source_dev'], link['source_port_name'],
+                    dest_node['name'], dest_port)
+
+            links.append({'description': desc,
+                          'destination_node_id': dest_node['id'],
                           'destination_port_id': dest_port_id,
                           'source_port_id': link['source_port_id'],
                           'source_node_id': link['source_node_id']})
@@ -493,7 +500,7 @@ class Converter():
         return port, destination
 
     @staticmethod
-    def calc_link(src_id, src_port, destination):
+    def calc_link(src_id, src_port, src_port_name, src_device, destination):
         """
         Calculate the link entry
         :param src_id:
@@ -503,6 +510,8 @@ class Converter():
         """
         link = {'source_node_id': src_id,
                 'source_port_id': src_port,
+                'source_port_name': src_port_name,
+                'source_dev': src_device,
                 'dest_dev': destination['device'],
                 'dest_port': destination['port']}
         return link
@@ -551,11 +560,13 @@ class Converter():
         :return: device_id, port_id
         """
         device_id = None
+        device_name = None
         port_id = None
         if destination_node != 'NIO':
             for node in nodes:
                 if destination_node == node['properties']['name']:
                     device_id = node['id']
+                    device_name = destination_node
                     for port in node['ports']:
                         if destination_port == port['name']:
                             port_id = port['id']
@@ -567,10 +578,13 @@ class Converter():
                     for port in node['ports']:
                         if destination_port == port['name']:
                             device_id = node['id']
+                            device_name = node['properties']['name']
                             port_id = port['id']
                             break
                     break
-        return device_id, port_id
+        device = {'id': device_id,
+                  'name': device_name}
+        return device, port_id
 
     @staticmethod
     def add_node_connections(link, nodes):
@@ -592,7 +606,7 @@ class Converter():
                         port['link_id'] = link['id']
                         break
 
-    def calc_router_links(self, connection, node_temp):
+    def calc_router_links(self, connection, node_temp, device):
         """
         Calculate a router link
         :param connection:
@@ -617,5 +631,6 @@ class Converter():
             conn_to = {'device': 'NIO',
                        'port': dest_temp[0]}
 
-        link = self.calc_link(node_temp['id'], src_port, conn_to)
+        link = self.calc_link(node_temp['id'], src_port, int_name, device,
+                              conn_to)
         return link

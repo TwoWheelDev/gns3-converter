@@ -84,10 +84,13 @@ class TestConverter(unittest.TestCase):
     def test_calc_link(self):
         exp_res = {'source_node_id': 1,
                    'source_port_id': 2,
-                   'dest_dev': 3,
-                   'dest_port': 2}
+                   'source_port_name': 'FastEthernet0/0',
+                   'source_dev': 'R1',
+                   'dest_dev': 'SiteA',
+                   'dest_port': 'f0/0'}
 
-        res = self.app.calc_link(1, 2, {'device': 3, 'port': 2})
+        res = self.app.calc_link(1, 2, 'FastEthernet0/0', 'R1',
+                                 {'device': 'SiteA', 'port': 'f0/0'})
         self.assertIsInstance(res, dict)
         self.assertDictEqual(res, exp_res)
 
