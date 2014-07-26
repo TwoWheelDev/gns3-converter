@@ -13,7 +13,6 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import json
-import datetime
 import os
 import sys
 import shutil
@@ -88,7 +87,6 @@ def main():
 
     # Save the new topology
     try:
-        date = datetime.datetime.now().strftime('%d%m%y-%H%M')
         config_err = False
         if args.output:
             output_dir = os.path.abspath(args.output)
@@ -121,7 +119,7 @@ def main():
             print('W: Some router startup configurations could not be found\n'
                   '   to be copied to the new topology')
 
-        filename = '%s-%s.gns3' % (topology_name, date)
+        filename = '%s.gns3' % topology_name
         file_path = os.path.join(topology_dir, filename)
         with open(file_path, 'w') as file:
             json.dump(assembled, file, indent=4, sort_keys=True)
