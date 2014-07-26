@@ -587,23 +587,57 @@ class Converter():
         return device, port_id
 
     @staticmethod
-    def add_node_connections(link, nodes):
+    def get_node_name_from_id(node_id, nodes):
+        node_name = ''
+        for node in nodes:
+            if node['id'] == node_id:
+                node_name = node['properties']['name']
+                break
+        return node_name
+
+    @staticmethod
+    def get_port_name_from_id(node_id, port_id, nodes):
+        port_name = ''
+        for node in nodes:
+            if node['id'] == node_id:
+                for port in node['ports']:
+                    if port['id'] == port_id:
+                        port_name = port['name']
+                        break
+        return port_name
+
+    def add_node_connections(self, link, nodes):
         """
         Add connections to the node items
         :param link:
         :param nodes:
         """
+        # Description
+        src_desc = 'connected to %s on port %s' % \
+                   (self.get_node_name_from_id(link['destination_node_id'],
+                                               nodes),
+                    self.get_port_name_from_id(link['destination_node_id'],
+                                               link['destination_port_id'],
+                                               nodes))
+        dest_desc = 'connected to %s on port %s' % \
+                    (self.get_node_name_from_id(link['source_node_id'],
+                                                nodes),
+                     self.get_port_name_from_id(link['source_node_id'],
+                                                link['source_port_id'],
+                                                nodes))
         # Add source connections
         for node in nodes:
             if node['id'] == link['source_node_id']:
                 for port in node['ports']:
                     if port['id'] == link['source_port_id']:
                         port['link_id'] = link['id']
+                        port['description'] = src_desc
                         break
             elif node['id'] == link['destination_node_id']:
                 for port in node['ports']:
                     if port['id'] == link['destination_port_id']:
                         port['link_id'] = link['id']
+                        port['description'] = dest_desc
                         break
 
     def calc_router_links(self, connection, node_temp, device):
