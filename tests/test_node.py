@@ -5,7 +5,6 @@ from gns3converter.node import Node
 class TestNode(unittest.TestCase):
     def setUp(self):
         self.app = Node()
-        self.app.node['ports'] = []
 
     def test_add_wic(self):
         exp_res = {'wic0': 'WIC-1T'}

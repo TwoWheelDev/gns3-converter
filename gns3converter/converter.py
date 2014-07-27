@@ -241,9 +241,6 @@ class Converter():
             connections = None
             interfaces = []
 
-            if tmp_node.device_info['type'] == 'EthernetSwitch':
-                tmp_node.node['ports'] = []
-
             if 'model' in devices[device]:
                 tmp_node.device_info['model'] = devices[device]['model']
             else:
@@ -303,9 +300,9 @@ class Converter():
                 tmp_node.node['type'] = \
                     tmp_node.device_info['model'].upper()
 
-                tmp_node.node['ports'] = self.calc_mb_ports(
+                tmp_node.node['ports'].extend(self.calc_mb_ports(
                     tmp_node.device_info['model'],
-                    tmp_node.device_info['chassis'])
+                    tmp_node.device_info['chassis']))
                 for item in sorted(tmp_node.node_prop):
                     if item.startswith('slot'):
                         slot = item[4]
@@ -341,7 +338,6 @@ class Converter():
                     tmp_node.device_info['type']
                 tmp_node.node['type'] = \
                     tmp_node.device_info['type']
-                tmp_node.node['ports'] = []
                 tmp_node.node_prop['nios'] = []
 
                 # Calculate the cloud ports and NIOs
