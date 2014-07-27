@@ -15,6 +15,7 @@
 """
 This module is used for building Nodes
 """
+import os
 from .ports import ADAPTER_MATRIX, PORT_TYPES
 
 
@@ -26,6 +27,9 @@ class Node():
         self.node_temp = {}
         self.node_temp_label = {}
         self.node_temp_props = {}
+        self.device_info = {'chassis': '',
+                            'model': '',
+                            'npe': None}
 
     def add_wic(self, old_wic, wic):
         """
@@ -62,3 +66,19 @@ class Node():
             port_id += 1
         self.node_temp['ports'].extend(ports)
         return num_ports
+
+    def add_info_from_hv(self, hv):
+        self.node_temp_props['image'] = os.path.basename(hv['image'])
+
+        # IDLE-PC
+        if 'idlepc' in hv:
+            self.node_temp_props['idlepc'] = hv['idlepc']
+        # Router RAM
+        if 'ram' in hv:
+            self.node_temp_props['ram'] = hv['ram']
+        # 7200 NPE
+        if 'npe' in hv:
+            self.device_info['npe'] = hv['npe']
+        # Device Chassis
+        if 'chassis' in hv:
+            self.device_info['chassis'] = hv['chassis']
