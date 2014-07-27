@@ -51,7 +51,10 @@ ADAPTER_MATRIX = {'NM-16ESW': {'ports': 16, 'type': 'F'},
                   'PA-GE': {'ports': 1, 'type': 'G'},
                   'PA-POS-OC3': {'ports': 1, 'type': 'P'},
                   'C7200-IO-2FE': {'ports': 2, 'type': 'F'},
-                  'C7200-IO-GE-E': {'ports': 1, 'type': 'G'}}
+                  'C7200-IO-GE-E': {'ports': 1, 'type': 'G'},
+                  'WIC-1ENET': {'ports': 1, 'type': 'E'},
+                  'WIC-1T': {'ports': 1, 'type': 'S'},
+                  'WIC-2T': {'ports': 2, 'type': 'S'}}
 
 # Port Type Matrix
 PORT_TYPES = {'G': 'GigabitEthernet',
@@ -60,5 +63,4 @@ PORT_TYPES = {'G': 'GigabitEthernet',
               'S': 'Serial',
               'A': 'ATM',
               'P': 'POS'}
-
 
