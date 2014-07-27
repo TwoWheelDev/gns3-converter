@@ -12,6 +12,9 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+"""
+ This class is the main gns3-converter class
+"""
 from configobj import ConfigObj, flatten_errors
 from validate import Validator
 import os
@@ -24,13 +27,10 @@ from gns3converter.node import Node
 
 # Globals
 # Regex matching interfaces (e.g. "f0/0")
-interface_re = re.compile(r"""^(g|gi|f|fa|a|at|s|se|e|et|p|po|i|id|IDS-Sensor
+INTERFACE_RE = re.compile(r"""^(g|gi|f|fa|a|at|s|se|e|et|p|po|i|id|IDS-Sensor
 |an|Analysis-Module)([0-9]+)/([0-9]+)""", re.IGNORECASE)
-# Regex matching interfaces with out a port (e.g. "f0")
-interface_noport_re = re.compile(r"""^(g|gi|f|fa|a|at|s|se|e|et|p|po)
-([0-9]+)""", re.IGNORECASE)
 # Regex matching a number (means an Ethernet switch port config)
-ethswint_re = re.compile(r"""^([0-9]+)""")
+ETHSWINT_RE = re.compile(r"""^([0-9]+)""")
 
 
 class Converter():
@@ -293,13 +293,15 @@ class Converter():
                         tmp_node.node_temp_props[item] = devices[device][item]
                 elif item == 'connections':
                     connections = devices[device][item]
-                elif interface_re.search(item):
+                elif INTERFACE_RE.search(item):
                     interfaces.append({'from': item,
                                        'to': devices[device][item]})
-                elif ethswint_re.search(item):
+                elif ETHSWINT_RE.search(item):
                     (port_def, destination) = self.calc_ethsw_port(
                         item, devices[device][item])
+
                     tmp_node.node_temp['ports'].append(port_def)
+
                     self.links.append(self.calc_link(
                         tmp_node.node_temp['id'],
                         port_def['id'],
@@ -319,6 +321,7 @@ class Converter():
             if device_info['type'] == 'Router':
                 tmp_node.node_temp['description'] = device_info['type'] + ' ' \
                     + device_info['model']
+
                 tmp_node.node_temp['type'] = device_info['model'].upper()
 
                 tmp_node.node_temp['ports'] = self.calc_mb_ports(
@@ -381,7 +384,7 @@ class Converter():
 
         for link in self.links:
             # Expand port name if required
-            if interface_re.search(link['dest_port']):
+            if INTERFACE_RE.search(link['dest_port']):
                 int_type = link['dest_port'][0]
                 dest_port = link['dest_port'].replace(
                     int_type, PORT_TYPES[int_type.upper()])
@@ -596,6 +599,12 @@ class Converter():
 
     @staticmethod
     def get_node_name_from_id(node_id, nodes):
+        """
+        Get the name of a node when given the node_id
+        :param node_id: The ID of a node
+        :param nodes: A list of nodes dicts
+        :return: node_name
+        """
         node_name = ''
         for node in nodes:
             if node['id'] == node_id:
@@ -605,6 +614,13 @@ class Converter():
 
     @staticmethod
     def get_port_name_from_id(node_id, port_id, nodes):
+        """
+        Get the name of a port for a given node and port ID
+        :param node_id: The UID of a node
+        :param port_id: The UID of a port
+        :param nodes: A list of nodes dicts
+        :return: port_name
+        """
         port_name = ''
         for node in nodes:
             if node['id'] == node_id:
