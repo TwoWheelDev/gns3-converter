@@ -232,20 +232,20 @@ class Converter():
         for device in sorted(devices):
             tmp_node = Node()
             # Start building the structure
-            tmp_node.node_temp_props['name'] = device
-            tmp_node.node_temp_label['text'] = device
-            tmp_node.node_temp['id'] = devices[device]['node_id']
-            tmp_node.node_temp['server_id'] = 1
-            tmp_node.node_temp_label['x'] = 15
-            tmp_node.node_temp_label['y'] = -25
-            tmp_node.node_temp['x'] = devices[device]['x']
-            tmp_node.node_temp['y'] = devices[device]['y']
+            tmp_node.node_prop['name'] = device
+            tmp_node.node_label['text'] = device
+            tmp_node.node['id'] = devices[device]['node_id']
+            tmp_node.node['server_id'] = 1
+            tmp_node.node_label['x'] = 15
+            tmp_node.node_label['y'] = -25
+            tmp_node.node['x'] = devices[device]['x']
+            tmp_node.node['y'] = devices[device]['y']
             tmp_node.device_info['type'] = devices[device]['type']
             connections = None
             interfaces = []
 
             if tmp_node.device_info['type'] == 'EthernetSwitch':
-                tmp_node.node_temp['ports'] = []
+                tmp_node.node['ports'] = []
 
             if 'model' in devices[device]:
                 tmp_node.device_info['model'] = devices[device]['model']
@@ -258,19 +258,19 @@ class Converter():
                     tmp_node.add_info_from_hv(hypervisors[hv_id])
 
                 elif item == 'type' and devices[device][item] == 'Router':
-                    tmp_node.node_temp['router_id'] = \
+                    tmp_node.node['router_id'] = \
                         devices[device]['node_id']
                 elif item == 'aux':
-                    tmp_node.node_temp_props['aux'] = devices[device][item]
+                    tmp_node.node_prop['aux'] = devices[device][item]
                 elif item == 'console':
-                    tmp_node.node_temp_props['console'] = devices[device][item]
+                    tmp_node.node_prop['console'] = devices[device][item]
                 elif item.startswith('slot'):
                     if tmp_node.device_info['model'] == 'c7200':
                         if item != 'slot0':
-                            tmp_node.node_temp_props[item] = \
+                            tmp_node.node_prop[item] = \
                                 devices[device][item]
                     else:
-                        tmp_node.node_temp_props[item] = devices[device][item]
+                        tmp_node.node_prop[item] = devices[device][item]
                 elif item == 'connections':
                     connections = devices[device][item]
                 elif INTERFACE_RE.search(item):
@@ -280,18 +280,18 @@ class Converter():
                     (port_def, destination) = self.calc_ethsw_port(
                         item, devices[device][item])
 
-                    tmp_node.node_temp['ports'].append(port_def)
+                    tmp_node.node['ports'].append(port_def)
 
                     self.links.append(self.calc_link(
-                        tmp_node.node_temp['id'],
+                        tmp_node.node['id'],
                         port_def['id'],
                         port_def['name'],
                         device,
                         destination))
                 elif item == 'cnfg':
                     new_config = 'i%s_startup-config.cfg' % \
-                                 tmp_node.node_temp['id']
-                    tmp_node.node_temp_props['startup_config'] = new_config
+                                 tmp_node.node['id']
+                    tmp_node.node_prop['startup_config'] = new_config
 
                     self.configs.append({'old': devices[device][item],
                                          'new': new_config})
@@ -299,68 +299,68 @@ class Converter():
                     tmp_node.add_wic(item, devices[device][item])
 
             if tmp_node.device_info['type'] == 'Router':
-                tmp_node.node_temp['description'] = \
+                tmp_node.node['description'] = \
                     tmp_node.device_info['type'] + ' ' + \
                     tmp_node.device_info['model']
 
-                tmp_node.node_temp['type'] = \
+                tmp_node.node['type'] = \
                     tmp_node.device_info['model'].upper()
 
-                tmp_node.node_temp['ports'] = self.calc_mb_ports(
+                tmp_node.node['ports'] = self.calc_mb_ports(
                     tmp_node.device_info['model'],
                     tmp_node.device_info['chassis'])
-                for item in sorted(tmp_node.node_temp_props):
+                for item in sorted(tmp_node.node_prop):
                     if item.startswith('slot'):
                         slot = item[4]
-                        tmp_node.node_temp['ports'].extend(
+                        tmp_node.node['ports'].extend(
                             self.calc_slot_ports(
-                                tmp_node.node_temp_props[item], slot))
+                                tmp_node.node_prop[item], slot))
                     elif item.startswith('wic'):
                         self.port_id += tmp_node.add_wic_ports(
-                            tmp_node.node_temp_props[item], int(item[3]),
+                            tmp_node.node_prop[item], int(item[3]),
                             self.port_id)
 
                 # Add default ports to 7200 and 3660
                 if tmp_node.device_info['model'] == 'c7200' \
                         and tmp_node.device_info['npe'] == 'npe-g2':
-                    tmp_node.node_temp['ports'].extend(
+                    tmp_node.node['ports'].extend(
                         self.calc_slot_ports('C7200-IO-GE-E', 0))
                 elif tmp_node.device_info['model'] == 'c7200':
-                    tmp_node.node_temp['ports'].extend(
+                    tmp_node.node['ports'].extend(
                         self.calc_slot_ports('C7200-IO-2FE', 0))
                 elif tmp_node.device_info['model'] == 'c3600':
-                    tmp_node.node_temp_props['chassis'] = \
+                    tmp_node.node_prop['chassis'] = \
                         tmp_node.device_info['chassis']
                     if tmp_node.device_info['chassis'] == '3660':
-                        tmp_node.node_temp_props['slot0'] = 'Leopard-2FE'
+                        tmp_node.node_prop['slot0'] = 'Leopard-2FE'
 
                 # Calculate the router links
                 for connection in interfaces:
                     self.links.append(self.calc_router_links(
-                        connection, tmp_node.node_temp, device))
+                        connection, tmp_node.node, device))
 
             elif tmp_node.device_info['type'] == 'Cloud':
-                tmp_node.node_temp['description'] = \
+                tmp_node.node['description'] = \
                     tmp_node.device_info['type']
-                tmp_node.node_temp['type'] = \
+                tmp_node.node['type'] = \
                     tmp_node.device_info['type']
-                tmp_node.node_temp['ports'] = []
-                tmp_node.node_temp_props['nios'] = []
+                tmp_node.node['ports'] = []
+                tmp_node.node_prop['nios'] = []
 
                 # Calculate the cloud ports and NIOs
                 connections = connections.split(' ')
                 for connection in sorted(connections):
                     (port, nio) = self.calc_cloud_connection(connection)
-                    tmp_node.node_temp['ports'].append(port)
-                    tmp_node.node_temp_props['nios'].append(nio)
+                    tmp_node.node['ports'].append(port)
+                    tmp_node.node_prop['nios'].append(nio)
             else:
-                tmp_node.node_temp['description'] = tmp_node.device_info['type']
-                tmp_node.node_temp['type'] = tmp_node.device_info['type']
+                tmp_node.node['description'] = tmp_node.device_info['type']
+                tmp_node.node['type'] = tmp_node.device_info['type']
 
-            tmp_node.node_temp['label'] = tmp_node.node_temp_label
-            tmp_node.node_temp['properties'] = tmp_node.node_temp_props
+            tmp_node.node['label'] = tmp_node.node_label
+            tmp_node.node['properties'] = tmp_node.node_prop
 
-            nodes.append(tmp_node.node_temp)
+            nodes.append(tmp_node.node)
 
         return nodes
 

@@ -24,9 +24,9 @@ class Node():
     This class defines a node used for building the Nodes configuration
     """
     def __init__(self):
-        self.node_temp = {}
-        self.node_temp_label = {}
-        self.node_temp_props = {}
+        self.node = {}
+        self.node_label = {}
+        self.node_prop = {}
         self.device_info = {'chassis': '',
                             'model': '',
                             'npe': None}
@@ -39,7 +39,7 @@ class Node():
         :param wic: WIC name
         """
         new_wic = 'wic' + old_wic[-1]
-        self.node_temp_props[new_wic] = wic
+        self.node_prop[new_wic] = wic
 
     def add_wic_ports(self, wic, wic_slot_number, port_id):
         """
@@ -64,18 +64,18 @@ class Node():
                          'slot_number': slot}
             ports.append(port_temp)
             port_id += 1
-        self.node_temp['ports'].extend(ports)
+        self.node['ports'].extend(ports)
         return num_ports
 
     def add_info_from_hv(self, hv):
-        self.node_temp_props['image'] = os.path.basename(hv['image'])
+        self.node_prop['image'] = os.path.basename(hv['image'])
 
         # IDLE-PC
         if 'idlepc' in hv:
-            self.node_temp_props['idlepc'] = hv['idlepc']
+            self.node_prop['idlepc'] = hv['idlepc']
         # Router RAM
         if 'ram' in hv:
-            self.node_temp_props['ram'] = hv['ram']
+            self.node_prop['ram'] = hv['ram']
         # 7200 NPE
         if 'npe' in hv:
             self.device_info['npe'] = hv['npe']
