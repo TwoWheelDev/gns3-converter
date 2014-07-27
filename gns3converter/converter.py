@@ -305,7 +305,7 @@ class Converter():
                     self.links.append(self.calc_link(
                         tmp_node.node_temp['id'],
                         port_def['id'],
-                        tmp_node.node_temp['ports']['name'],
+                        port_def['name'],
                         device,
                         destination))
                 elif item == 'cnfg':
