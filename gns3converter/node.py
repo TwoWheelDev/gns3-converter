@@ -15,6 +15,7 @@
 """
 This module is used for building Nodes
 """
+from .ports import ADAPTER_MATRIX, PORT_TYPES
 
 
 class Node():
@@ -25,3 +26,39 @@ class Node():
         self.node_temp = {}
         self.node_temp_label = {}
         self.node_temp_props = {}
+
+    def add_wic(self, old_wic, wic):
+        """
+        Convert the old style WIC slot to a new style WIC slot and add the WIC
+        to the node properties
+        :param old_wic: Old WIC slot
+        :param wic: WIC name
+        """
+        new_wic = 'wic' + old_wic[-1]
+        self.node_temp_props[new_wic] = wic
+
+    def add_wic_ports(self, wic, wic_slot_number, port_id):
+        """
+        Add the ports for a specific WIC to the node['ports'] dictionary
+        :param wic: WIC name
+        :param wic_slot_number: WIC Slot Number (integer)
+        """
+        num_ports = ADAPTER_MATRIX[wic]['ports']
+        port_type = ADAPTER_MATRIX[wic]['type']
+        ports = []
+
+        # Dynamips WICs port number start on a multiple of 16.
+        base = 16 * (wic_slot_number + 1)
+        # WICs are always in adapter slot 0.
+        slot = 0
+
+        for port_number in range(num_ports):
+            port_name = PORT_TYPES[port_type] + '%s/%s' % (slot, port_number)
+            port_temp = {'name': port_name,
+                         'id': port_id,
+                         'port_number': base + port_number,
+                         'slot_number': slot}
+            ports.append(port_temp)
+            port_id += 1
+        self.node_temp['ports'].extend(ports)
+        return num_ports

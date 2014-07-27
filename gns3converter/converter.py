@@ -316,7 +316,7 @@ class Converter():
                     self.configs.append({'old': devices[device][item],
                                          'new': new_config})
                 elif item.startswith('wic'):
-                    pass
+                    tmp_node.add_wic(item, devices[device][item])
 
             if device_info['type'] == 'Router':
                 tmp_node.node_temp['description'] = device_info['type'] + ' ' \
@@ -332,6 +332,10 @@ class Converter():
                         tmp_node.node_temp['ports'].extend(
                             self.calc_slot_ports(
                                 tmp_node.node_temp_props[item], slot))
+                    elif item.startswith('wic'):
+                        self.port_id += tmp_node.add_wic_ports(
+                            tmp_node.node_temp_props[item], int(item[3]),
+                            self.port_id)
 
                 # Add default ports to 7200 and 3660
                 if device_info['model'] == 'c7200' and npe == 'npe-g2':
