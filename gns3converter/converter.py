@@ -235,9 +235,6 @@ class Converter():
             tmp_node.node_prop['name'] = device
             tmp_node.node_label['text'] = device
             tmp_node.node['id'] = devices[device]['node_id']
-            tmp_node.node['server_id'] = 1
-            tmp_node.node_label['x'] = 15
-            tmp_node.node_label['y'] = -25
             tmp_node.node['x'] = devices[device]['x']
             tmp_node.node['y'] = devices[device]['y']
             tmp_node.device_info['type'] = devices[device]['type']

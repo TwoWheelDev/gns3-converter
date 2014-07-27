@@ -24,8 +24,9 @@ class Node():
     This class defines a node used for building the Nodes configuration
     """
     def __init__(self):
-        self.node = {}
-        self.node_label = {}
+        self.node = {'server_id': 1}
+        self.node_label = {'x': 15,
+                           'y': -25}
         self.node_prop = {}
         self.device_info = {'chassis': '',
                             'model': '',
