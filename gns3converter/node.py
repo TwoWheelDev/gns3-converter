@@ -69,18 +69,18 @@ class Node():
         self.node['ports'].extend(ports)
         return num_ports
 
-    def add_info_from_hv(self, hv):
-        self.node_prop['image'] = os.path.basename(hv['image'])
+    def add_info_from_hv(self, hypervisor):
+        self.node_prop['image'] = os.path.basename(hypervisor['image'])
 
         # IDLE-PC
-        if 'idlepc' in hv:
-            self.node_prop['idlepc'] = hv['idlepc']
+        if 'idlepc' in hypervisor:
+            self.node_prop['idlepc'] = hypervisor['idlepc']
         # Router RAM
-        if 'ram' in hv:
-            self.node_prop['ram'] = hv['ram']
+        if 'ram' in hypervisor:
+            self.node_prop['ram'] = hypervisor['ram']
         # 7200 NPE
-        if 'npe' in hv:
-            self.device_info['npe'] = hv['npe']
+        if 'npe' in hypervisor:
+            self.device_info['npe'] = hypervisor['npe']
         # Device Chassis
-        if 'chassis' in hv:
-            self.device_info['chassis'] = hv['chassis']
+        if 'chassis' in hypervisor:
+            self.device_info['chassis'] = hypervisor['chassis']
