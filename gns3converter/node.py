@@ -72,6 +72,10 @@ class Node():
         return num_ports
 
     def add_info_from_hv(self, hypervisor):
+        """
+        Add the information we need from the old hypervisor section
+        :param hypervisor: Single hypervisor dictionary
+        """
         self.node_prop['image'] = os.path.basename(hypervisor['image'])
 
         # IDLE-PC
