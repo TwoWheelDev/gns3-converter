@@ -32,6 +32,8 @@ class Node():
         self.device_info = {'chassis': '',
                             'model': '',
                             'npe': None}
+        self.connections = None
+        self.interfaces = []
 
     def add_wic(self, old_wic, wic):
         """

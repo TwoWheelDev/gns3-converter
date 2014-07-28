@@ -238,8 +238,6 @@ class Converter():
             tmp_node.node['x'] = devices[device]['x']
             tmp_node.node['y'] = devices[device]['y']
             tmp_node.device_info['type'] = devices[device]['type']
-            connections = None
-            interfaces = []
 
             if 'model' in devices[device]:
                 tmp_node.device_info['model'] = devices[device]['model']
@@ -266,10 +264,10 @@ class Converter():
                     else:
                         tmp_node.node_prop[item] = devices[device][item]
                 elif item == 'connections':
-                    connections = devices[device][item]
+                    tmp_node.connections = devices[device][item]
                 elif INTERFACE_RE.search(item):
-                    interfaces.append({'from': item,
-                                       'to': devices[device][item]})
+                    tmp_node.interfaces.append({'from': item,
+                                                'to': devices[device][item]})
                 elif ETHSWINT_RE.search(item):
                     (port_def, destination) = self.calc_ethsw_port(
                         item, devices[device][item])
@@ -329,7 +327,7 @@ class Converter():
                         tmp_node.node_prop['slot0'] = 'Leopard-2FE'
 
                 # Calculate the router links
-                for connection in interfaces:
+                for connection in tmp_node.interfaces:
                     self.links.append(self.calc_router_links(
                         connection, tmp_node.node, device))
 
@@ -341,8 +339,8 @@ class Converter():
                 tmp_node.node_prop['nios'] = []
 
                 # Calculate the cloud ports and NIOs
-                connections = connections.split(' ')
-                for connection in sorted(connections):
+                tmp_node.connections = tmp_node.connections.split(' ')
+                for connection in sorted(tmp_node.connections):
                     (port, nio) = self.calc_cloud_connection(connection)
                     tmp_node.node['ports'].append(port)
                     tmp_node.node_prop['nios'].append(nio)
