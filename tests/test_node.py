@@ -4,7 +4,13 @@ from gns3converter.node import Node
 
 class TestNode(unittest.TestCase):
     def setUp(self):
-        self.app = Node()
+        hv_input = {'image': '/home/test/GNS3/Images/c3725.image',
+                    'idlepc': '0x61616161',
+                    'ram': '256',
+                    'npe': 'npe-400',
+                    'chassis': '2620XM'}
+
+        self.app = Node(hv_input)
 
     def test_add_wic(self):
         exp_res = {'wic0': 'WIC-1T'}
@@ -22,12 +28,6 @@ class TestNode(unittest.TestCase):
         self.assertDictEqual(exp_res[0], self.app.node['ports'][0])
 
     def test_add_info_from_hv(self):
-        hv_input = {'image': '/home/test/GNS3/Images/c3725.image',
-                    'idlepc': '0x61616161',
-                    'ram': '256',
-                    'npe': 'npe-400',
-                    'chassis': '2620XM'}
-
         exp_res_node_prop = {'image': 'c3725.image',
                              'idlepc': '0x61616161',
                              'ram': '256'}
@@ -35,6 +35,6 @@ class TestNode(unittest.TestCase):
                                'chassis': '2620XM',
                                'npe': 'npe-400'}
 
-        self.app.add_info_from_hv(hv_input)
+        self.app.add_info_from_hv()
         self.assertDictEqual(exp_res_node_prop, self.app.node_prop)
         self.assertDictEqual(exp_res_device_info, self.app.device_info)

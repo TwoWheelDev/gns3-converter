@@ -23,7 +23,7 @@ class Node():
     """
     This class defines a node used for building the Nodes configuration
     """
-    def __init__(self):
+    def __init__(self, hypervisor):
         self.node = {'ports': [],
                      'server_id': 1}
         self.node_label = {'x': 15,
@@ -34,6 +34,7 @@ class Node():
                             'npe': None}
         self.connections = None
         self.interfaces = []
+        self.hypervisor = hypervisor
 
     def add_wic(self, old_wic, wic):
         """
@@ -71,22 +72,22 @@ class Node():
         self.node['ports'].extend(ports)
         return num_ports
 
-    def add_info_from_hv(self, hypervisor):
+    def add_info_from_hv(self):
         """
         Add the information we need from the old hypervisor section
         :param hypervisor: Single hypervisor dictionary
         """
-        self.node_prop['image'] = os.path.basename(hypervisor['image'])
+        self.node_prop['image'] = os.path.basename(self.hypervisor['image'])
 
         # IDLE-PC
-        if 'idlepc' in hypervisor:
-            self.node_prop['idlepc'] = hypervisor['idlepc']
+        if 'idlepc' in self.hypervisor:
+            self.node_prop['idlepc'] = self.hypervisor['idlepc']
         # Router RAM
-        if 'ram' in hypervisor:
-            self.node_prop['ram'] = hypervisor['ram']
+        if 'ram' in self.hypervisor:
+            self.node_prop['ram'] = self.hypervisor['ram']
         # 7200 NPE
-        if 'npe' in hypervisor:
-            self.device_info['npe'] = hypervisor['npe']
+        if 'npe' in self.hypervisor:
+            self.device_info['npe'] = self.hypervisor['npe']
         # Device Chassis
-        if 'chassis' in hypervisor:
-            self.device_info['chassis'] = hypervisor['chassis']
+        if 'chassis' in self.hypervisor:
+            self.device_info['chassis'] = self.hypervisor['chassis']

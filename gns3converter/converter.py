@@ -230,7 +230,8 @@ class Converter():
         nodes = []
 
         for device in sorted(devices):
-            tmp_node = Node()
+            hv_id = devices[device]['hv_id']
+            tmp_node = Node(hypervisors[hv_id])
             # Start building the structure
             tmp_node.node_prop['name'] = device
             tmp_node.node_label['text'] = device
@@ -244,12 +245,11 @@ class Converter():
             else:
                 tmp_node.device_info['model'] = ''
 
-            for item in sorted(devices[device]):
-                if item == 'hv_id' and devices[device]['type'] == 'Router':
-                    hv_id = devices[device][item]
-                    tmp_node.add_info_from_hv(hypervisors[hv_id])
+            if tmp_node.device_info['type'] == 'Router':
+                tmp_node.add_info_from_hv()
 
-                elif item == 'type' and devices[device][item] == 'Router':
+            for item in sorted(devices[device]):
+                if item == 'type' and devices[device][item] == 'Router':
                     tmp_node.node['router_id'] = \
                         devices[device]['node_id']
                 elif item == 'aux':
