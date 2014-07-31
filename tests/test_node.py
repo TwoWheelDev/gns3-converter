@@ -24,13 +24,13 @@ class TestNode(unittest.TestCase):
                     'npe': 'npe-400',
                     'chassis': '2620XM'}
 
-        self.app = Node(hv_input)
+        self.app = Node(hv_input, 1)
 
     def test_add_wic(self):
         exp_res = {'wic0': 'WIC-1T'}
 
         self.app.add_wic('wic0/0', 'WIC-1T')
-        self.assertDictEqual(exp_res, self.app.node_prop)
+        self.assertDictEqual(exp_res, self.app.node['properties'])
 
     def test_add_wic_ports(self):
         exp_res = [{'name': 'Serial0/0',
@@ -38,7 +38,9 @@ class TestNode(unittest.TestCase):
                     'port_number': 16,
                     'slot_number': 0}]
 
-        self.app.add_wic_ports('WIC-1T', 0, 1)
+        self.app.node['properties']['wic0'] = 'WIC-1T'
+
+        self.app.add_wic_ports('wic0')
         self.assertDictEqual(exp_res[0], self.app.node['ports'][0])
 
     def test_add_info_from_hv(self):
@@ -50,5 +52,115 @@ class TestNode(unittest.TestCase):
                                'npe': 'npe-400'}
 
         self.app.add_info_from_hv()
-        self.assertDictEqual(exp_res_node_prop, self.app.node_prop)
+        self.assertDictEqual(exp_res_node_prop, self.app.node['properties'])
         self.assertDictEqual(exp_res_device_info, self.app.device_info)
+
+    def test_calc_mb_ports_c3725(self):
+        exp_res = [{'name': 'FastEthernet0/0', 'id': 1, 'port_number': 0,
+                    'slot_number': 0},
+                   {'name': 'FastEthernet0/1', 'id': 2, 'port_number': 1,
+                    'slot_number': 0}]
+
+        self.app.device_info['model'] = 'c3725'
+
+        self.app.calc_mb_ports()
+        self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
+        self.assertDictEqual(self.app.node['ports'][1], exp_res[1])
+
+    def test_calc_mb_ports_c2600(self):
+        exp_res = [{'name': 'Ethernet0/0', 'id': 1, 'port_number': 0,
+                    'slot_number': 0}]
+
+        self.app.device_info['model'] = 'c2600'
+        self.app.device_info['chassis'] = '2610'
+
+        self.app.calc_mb_ports()
+        self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
+
+    def test_calc_cloud_connection(self):
+        exp_result = {'id': 1,
+                      'name': 'nio_gen_eth:eth0',
+                      'stub': True}
+        self.app.connections = ['SW1:1:nio_gen_eth:eth0']
+        self.app.calc_cloud_connection()
+        #Check NIO String
+        self.assertIsInstance(self.app.node['properties']['nios'], list)
+        self.assertIsInstance(self.app.node['properties']['nios'][0], str)
+        self.assertEqual(self.app.node['properties']['nios'][0],
+                         'nio_gen_eth:eth0')
+        #Check Port dictionary
+        self.assertIsInstance(self.app.node['ports'][0], dict)
+        self.assertDictEqual(self.app.node['ports'][0], exp_result)
+
+    def test_calc_ethsw_port_device(self):
+        self.app.node['id'] = 1
+        self.app.node['properties']['name'] = 'SW1'
+        exp_port = {'id': 1, 'name': 1, 'port_number': 1,
+                    'type': 'access', 'vlan': 1}
+        exp_link = {'source_port_id': 1,
+                    'source_node_id': 1,
+                    'source_port_name': 1,
+                    'dest_dev': 'SW2',
+                    'source_dev': 'SW1',
+                    'dest_port': '1'}
+
+        self.app.calc_ethsw_port(1, 'access 1 SW2 1')
+        self.assertIsInstance(self.app.node['ports'][0], dict)
+        self.assertIsInstance(self.app.links[0], dict)
+
+        self.assertDictEqual(self.app.node['ports'][0], exp_port)
+        self.assertDictEqual(self.app.links[0], exp_link)
+
+    def test_calc_ethsw_port_nio(self):
+        self.app.node['id'] = 1
+        self.app.node['properties']['name'] = 'SW1'
+        exp_port = {'id': 1, 'name': 1, 'port_number': 1,
+                    'type': 'access', 'vlan': 1}
+        exp_link = {'device': 'NIO', 'port': 'nio_gen_eth:eth0'}
+        exp_link = {'source_port_id': 1,
+                    'source_node_id': 1,
+                    'source_port_name': 1,
+                    'dest_dev': 'NIO',
+                    'source_dev': 'SW1',
+                    'dest_port': 'nio_gen_eth:eth0'}
+
+        self.app.calc_ethsw_port(1, 'access 1 nio_gen_eth:eth0')
+        self.assertIsInstance(self.app.node['ports'][0], dict)
+        self.assertIsInstance(self.app.links[0], dict)
+
+        self.assertDictEqual(self.app.node['ports'][0], exp_port)
+        self.assertDictEqual(self.app.links[0], exp_link)
+
+    def test_calc_link(self):
+        exp_res = {'source_node_id': 1,
+                   'source_port_id': 2,
+                   'source_port_name': 'FastEthernet0/0',
+                   'source_dev': 'R1',
+                   'dest_dev': 'SiteA',
+                   'dest_port': 'f0/0'}
+
+        self.app.calc_link(1, 2, 'FastEthernet0/0', 'R1',
+                           {'device': 'SiteA', 'port': 'f0/0'})
+        self.assertIsInstance(self.app.links[0], dict)
+        self.assertDictEqual(self.app.links[0], exp_res)
+
+    def test_add_slot_ports(self):
+        self.app.node['properties']['slot1'] = 'NM-4T'
+        exp_res = [{'name': 'Serial1/0', 'id': 1, 'port_number': 0,
+                    'slot_number': 1},
+                   {'name': 'Serial1/1', 'id': 2, 'port_number': 1,
+                    'slot_number': 1},
+                   {'name': 'Serial1/2', 'id': 3, 'port_number': 2,
+                    'slot_number': 1},
+                   {'name': 'Serial1/3', 'id': 4, 'port_number': 3,
+                    'slot_number': 1}]
+
+        self.app.add_slot_ports('slot1')
+        self.assertListEqual(self.app.node['ports'], exp_res)
+        self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
+        self.assertDictEqual(self.app.node['ports'][1], exp_res[1])
+        self.assertDictEqual(self.app.node['ports'][2], exp_res[2])
+        self.assertDictEqual(self.app.node['ports'][3], exp_res[3])
+
+if __name__ == '__main__':
+    unittest.main()
