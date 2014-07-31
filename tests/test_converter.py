@@ -45,21 +45,5 @@ class TestConverter(unittest.TestCase):
         self.assertDictEqual(tests.data.devices, devices)
         self.assertDictEqual(tests.data.conf, conf)
 
-    def test_device_typename(self):
-        exp_result = {'ROUTER R1': {'name': 'R1', 'type': 'Router'},
-                      'QEMU Q1': {'name': 'Q1', 'type': 'QEMU'},
-                      'VBOX V1': {'name': 'V1', 'type': 'VBOX'},
-                      'FRSW FR1': {'name': 'FR1', 'type': 'FrameRelaySwitch'},
-                      'ETHSW SW1': {'name': 'SW1', 'type': 'EthernetSwitch'},
-                      'Hub Hub1': {'name': 'Hub1', 'type': 'EthernetHub'},
-                      'ATMSW SW1': {'name': 'SW1', 'type': 'ATMSwitch'},
-                      'ATMBR BR1': {'name': 'BR1', 'type': 'ATMBR'},
-                      'Cloud C1': {'name': 'C1', 'type': 'Cloud'}}
-
-        for device in exp_result:
-                (name, dev_type) = self.app.device_typename(device)
-                self.assertEqual(exp_result[device]['name'], name)
-                self.assertEqual(exp_result[device]['type'], dev_type['type'])
-
 if __name__ == '__main__':
     unittest.main()

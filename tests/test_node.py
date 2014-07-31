@@ -132,6 +132,7 @@ class TestNode(unittest.TestCase):
         self.assertDictEqual(self.app.links[0], exp_link)
 
     def test_calc_link(self):
+        self.app.node['properties']['name'] = 'R1'
         exp_res = {'source_node_id': 1,
                    'source_port_id': 2,
                    'source_port_name': 'FastEthernet0/0',
@@ -139,7 +140,7 @@ class TestNode(unittest.TestCase):
                    'dest_dev': 'SiteA',
                    'dest_port': 'f0/0'}
 
-        self.app.calc_link(1, 2, 'FastEthernet0/0', 'R1',
+        self.app.calc_link(1, 2, 'FastEthernet0/0',
                            {'device': 'SiteA', 'port': 'f0/0'})
         self.assertIsInstance(self.app.links[0], dict)
         self.assertDictEqual(self.app.links[0], exp_res)
