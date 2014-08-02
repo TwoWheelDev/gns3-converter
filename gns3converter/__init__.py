@@ -12,6 +12,5 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
-from pkg_resources import get_distribution
 from .converter import Converter
-__version__ = get_distribution('gns3-converter').version
+__version__ = '0.1.0'
