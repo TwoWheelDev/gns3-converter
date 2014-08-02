@@ -7,3 +7,5 @@ python:
 install: "pip install -r requirements.txt --use-mirrors"
 
 script: coverage run --source=gns3converter setup.py test
+
+after_success: coveralls
