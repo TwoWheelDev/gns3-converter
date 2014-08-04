@@ -160,8 +160,62 @@ class TestNode(unittest.TestCase):
         self.assertListEqual(self.app.node['ports'], exp_res)
         self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
         self.assertDictEqual(self.app.node['ports'][1], exp_res[1])
-        self.assertDictEqual(self.app.node['ports'][2], exp_res[2])
-        self.assertDictEqual(self.app.node['ports'][3], exp_res[3])
+
+    def test_add_slot_ports_c7200(self):
+        self.app.device_info['model'] = 'c7200'
+        exp_res = [{'name': 'FastEthernet0/0', 'id': 1, 'port_number': 0,
+                    'slot_number': 0},
+                   {'name': 'FastEthernet0/1', 'id': 2, 'port_number': 1,
+                    'slot_number': 0}]
+
+        self.app.add_slot_ports('slot0')
+        self.assertListEqual(self.app.node['ports'], exp_res)
+        self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
+        self.assertDictEqual(self.app.node['ports'][1], exp_res[1])
+
+    def test_add_slot_ports_c7200_npeg2(self):
+        self.app.device_info['model'] = 'c7200'
+        self.app.device_info['npe'] = 'npe-g2'
+        exp_res = [{'name': 'GigabitEthernet0/0', 'id': 1, 'port_number': 0,
+                    'slot_number': 0}]
+
+        self.app.add_slot_ports('slot0')
+        self.assertListEqual(self.app.node['ports'], exp_res)
+        self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
+
+    def test_set_description_router(self):
+        self.app.device_info['type'] = 'Router'
+        self.app.device_info['model'] = 'c3725'
+
+        self.app.set_description()
+        self.assertEqual(self.app.node['description'], 'Router c3725')
+
+    def test_set_description_cloud(self):
+        self.app.device_info['type'] = 'Cloud'
+
+        self.app.set_description()
+        self.assertEqual(self.app.node['description'], 'Cloud')
+
+    def test_set_type_router(self):
+        self.app.device_info['type'] = 'Router'
+        self.app.device_info['model'] = 'c3725'
+
+        self.app.set_type()
+        self.assertEqual(self.app.node['type'], 'C3725')
+
+    def test_set_type_cloud(self):
+        self.app.device_info['type'] = 'Cloud'
+
+        self.app.set_type()
+        self.assertEqual(self.app.node['type'], 'Cloud')
+
+    def test_get_nb_added_ports(self):
+        self.app.node['properties']['slot1'] = 'NM-4T'
+        self.app.add_slot_ports('slot1')
+
+        nb_added = self.app.get_nb_added_ports(0)
+        self.assertIsInstance(nb_added, int)
+        self.assertEqual(nb_added, 5)
 
 if __name__ == '__main__':
     unittest.main()
