@@ -1,6 +1,9 @@
-from setuptools import setup
-from cx_Freeze import setup, Executable
 import os.path
+from setuptools import setup
+try:
+    from cx_Freeze import setup, Executable
+except ImportError:
+    pass
 
 zip_includes = [('gns3converter/configspec',
                  os.path.join('gns3converter', 'configspec'))]
@@ -19,13 +22,13 @@ setup(
     install_requires=['configobj'],
     package_data={'gns3converter': ['configspec']},
     entry_points={'console_scripts':
-                ['converter = gns3converter.main:main']},
+                ['gns3-converter = gns3converter.main:main']},
     options={'build_exe': {'namespace_packages': 'gns3converter',
                            'packages': 'gns3converter',
                            'zip_includes': zip_includes
                            }
              },
-    executables=[Executable("gns3converter/main.py")],
+    executables=[Executable("gns3-converter.py")],
     classifiers=['Development Status :: 4 - Beta',
                  'Environment :: Console',
                  'Intended Audience :: Education',
