@@ -27,25 +27,8 @@ def main():
     """
     print('GNS3 Topology Converter')
 
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description='Convert old ini-style GNS3 topologies (<=0.8.7) to the '
-        'newer\nversion 1+ JSON format',
-        epilog='Copyright (C) 2014 Daniel Lintott and licensed under the '
-        'GPLv3+ license.\n\nPlease report any bugs to: '
-        'https://github.com/dlintott/gns3-converter/issues')
-    parser.add_argument('--version',
-                        action='version',
-                        version='%(prog)s ' +
-                        __version__)
-    parser.add_argument('-o', '--output', help='Output the new topology to '
-                        'this directory')
-    parser.add_argument('topology', help='GNS3 .net topology file')
-    parser.add_argument('--debug',
-                        help='Enable debugging output',
-                        action='store_true')
-
-    args = parser.parse_args()
+    arg_parse = setup_argparse()
+    args = arg_parse.parse_args()
 
     # Create a new instance of the the Converter
     topology_path = os.path.abspath(args.topology)
@@ -127,6 +110,23 @@ def main():
                   '     %s' % topology_dir)
     except OSError as error:
         print(error)
+
+
+def setup_argparse():
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description='Convert old ini-style GNS3 topologies (<=0.8.7) to '
+                    'the newer\nversion 1+ JSON format')
+    parser.add_argument('--version',
+                        action='version',
+                        version='%(prog)s ' + __version__)
+    parser.add_argument('-o', '--output', help='Output the new topology to '
+                        'this directory')
+    parser.add_argument('topology', help='GNS3 .net topology file')
+    parser.add_argument('--debug',
+                        help='Enable debugging output',
+                        action='store_true')
+    return parser
 
 if __name__ == '__main__':
     main()
