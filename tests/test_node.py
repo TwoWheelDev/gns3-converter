@@ -42,6 +42,7 @@ class TestNode(unittest.TestCase):
 
         self.app.add_wic_ports('wic0')
         self.assertDictEqual(exp_res[0], self.app.node['ports'][0])
+        self.assertEqual(self.app.port_id, 2)
 
     def test_add_info_from_hv(self):
         exp_res_node_prop = {'image': 'c3725.image',
@@ -66,6 +67,7 @@ class TestNode(unittest.TestCase):
         self.app.calc_mb_ports()
         self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
         self.assertDictEqual(self.app.node['ports'][1], exp_res[1])
+        self.assertEqual(self.app.port_id, 3)
 
     def test_calc_mb_ports_c2600(self):
         exp_res = [{'name': 'Ethernet0/0', 'id': 1, 'port_number': 0,
@@ -76,6 +78,7 @@ class TestNode(unittest.TestCase):
 
         self.app.calc_mb_ports()
         self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
+        self.assertEqual(self.app.port_id, 2)
 
     def test_calc_cloud_connection(self):
         exp_result = {'id': 1,
@@ -91,6 +94,7 @@ class TestNode(unittest.TestCase):
         #Check Port dictionary
         self.assertIsInstance(self.app.node['ports'][0], dict)
         self.assertDictEqual(self.app.node['ports'][0], exp_result)
+        self.assertEqual(self.app.port_id, 2)
 
     def test_calc_ethsw_port_device(self):
         self.app.node['id'] = 1
@@ -116,7 +120,6 @@ class TestNode(unittest.TestCase):
         self.app.node['properties']['name'] = 'SW1'
         exp_port = {'id': 1, 'name': 1, 'port_number': 1,
                     'type': 'access', 'vlan': 1}
-        exp_link = {'device': 'NIO', 'port': 'nio_gen_eth:eth0'}
         exp_link = {'source_port_id': 1,
                     'source_node_id': 1,
                     'source_port_name': 1,
@@ -160,6 +163,7 @@ class TestNode(unittest.TestCase):
         self.assertListEqual(self.app.node['ports'], exp_res)
         self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
         self.assertDictEqual(self.app.node['ports'][1], exp_res[1])
+        self.assertEqual(self.app.port_id, 5)
 
     def test_add_slot_ports_c7200(self):
         self.app.device_info['model'] = 'c7200'
@@ -172,6 +176,7 @@ class TestNode(unittest.TestCase):
         self.assertListEqual(self.app.node['ports'], exp_res)
         self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
         self.assertDictEqual(self.app.node['ports'][1], exp_res[1])
+        self.assertEqual(self.app.port_id, 3)
 
     def test_add_slot_ports_c7200_npeg2(self):
         self.app.device_info['model'] = 'c7200'
@@ -182,6 +187,7 @@ class TestNode(unittest.TestCase):
         self.app.add_slot_ports('slot0')
         self.assertListEqual(self.app.node['ports'], exp_res)
         self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
+        self.assertEqual(self.app.port_id, 2)
 
     def test_set_description_router(self):
         self.app.device_info['type'] = 'Router'
