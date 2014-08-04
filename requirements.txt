@@ -1,3 +1,4 @@
 configobj
 coveralls
 cx_Freeze
+sphinx-argparse
