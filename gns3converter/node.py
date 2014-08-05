@@ -107,9 +107,10 @@ class Node(Interfaces):
         """
         Add the information we need from the old hypervisor section
         """
-        self.node['properties']['image'] = \
-            os.path.basename(self.hypervisor['image'])
-
+        # Router Image
+        if 'image' in self.hypervisor:
+            self.node['properties']['image'] = \
+                os.path.basename(self.hypervisor['image'])
         # IDLE-PC
         if 'idlepc' in self.hypervisor:
             self.node['properties']['idlepc'] = self.hypervisor['idlepc']
@@ -282,11 +283,19 @@ class Node(Interfaces):
         # 0: Destination device 1: Destination port
         # 2: NIO 3: NIO Destination
         self.node['properties']['nios'] = []
+        self.connections = self.connections.split(' ')
 
         for connection in sorted(self.connections):
             connection = connection.split(':')
-            #destination = connection[0] + ':' + connection[1]
-            nio = connection[2] + ':' + connection[3]
+            connection_len = len(connection)
+            if connection_len == 4:
+                nio = '%s:%s' % (connection[2], connection[3])
+            elif connection_len == 6:
+                nio = '%s:%s:%s:%s' % (connection[2], connection[3],
+                                       connection[4], connection[5])
+            else:
+                raise RuntimeError('Error: Unknown connection string length '
+                                   '(Length: %s)' % connection_len)
             self.node['properties']['nios'].append(nio)
             #port entry
             self.node['ports'].append({'id': self.port_id,

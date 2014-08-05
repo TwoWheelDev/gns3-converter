@@ -138,7 +138,10 @@ class Converter():
 
         for device in sorted(devices):
             hv_id = devices[device]['hv_id']
-            tmp_node = Node(hypervisors[hv_id], self.port_id)
+            if hv_id in hypervisors:
+                tmp_node = Node(hypervisors[hv_id], self.port_id)
+            else:
+                tmp_node = Node({}, self.port_id)
             # Start building the structure
             tmp_node.node['properties']['name'] = device
             tmp_node.node['label']['text'] = device
@@ -300,7 +303,7 @@ class Converter():
             for node in nodes:
                 if node['type'] == 'Cloud':
                     for port in node['ports']:
-                        if destination_port == port['name']:
+                        if destination_port.lower() == port['name']:
                             device_id = node['id']
                             device_name = node['properties']['name']
                             port_id = port['id']

@@ -51,8 +51,7 @@ class LegacyTopology():
         """
         (device_name, device_type) = self.device_typename(item)
         self.devices[device_name] = {}
-        if instance != 'GNS3-DATA':
-            self.devices[device_name]['hv_id'] = self.hv_id
+        self.devices[device_name]['hv_id'] = self.hv_id
         self.devices[device_name]['node_id'] = self.nid
         self.devices[device_name]['type'] = device_type['type']
 
