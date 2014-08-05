@@ -84,7 +84,7 @@ class TestNode(unittest.TestCase):
         exp_result = {'id': 1,
                       'name': 'nio_gen_eth:eth0',
                       'stub': True}
-        self.app.connections = ['SW1:1:nio_gen_eth:eth0']
+        self.app.connections = 'SW1:1:nio_gen_eth:eth0'
         self.app.calc_cloud_connection()
         #Check NIO String
         self.assertIsInstance(self.app.node['properties']['nios'], list)
