@@ -13,7 +13,9 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 """
-Anything to do with interfaces
+Anything to do with interfaces, also contains:
+    * INTERFACE_RE for matching interfaces in a .net topology
+    * ETHSWINT_RE for matching Ethernet switch port in a .net topology
 """
 import re
 
@@ -27,6 +29,8 @@ ETHSWINT_RE = re.compile(r"""^([0-9]+)""")
 class Interfaces():
     """
     Base Interface Class
+
+    :param int port_id: starting port ID
     """
     def __init__(self, port_id):
         self.interfaces = []

@@ -12,6 +12,11 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+"""
+Convenience module for adapters containing:
+    * Adapter and port number/type matrix
+    * Port type conversions (short to long)
+"""
 
 # Adapter Cards Matrix
 ADAPTER_MATRIX = {'NM-16ESW': {'ports': 16, 'type': 'F'},

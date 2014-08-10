@@ -24,6 +24,9 @@ from gns3converter.interfaces import INTERFACE_RE, ETHSWINT_RE, Interfaces
 class Node(Interfaces):
     """
     This class defines a node used for building the Nodes configuration
+
+    :param hypervisor: Hypervisor
+    :param int port_id: starting port ID for this node
     """
     def __init__(self, hypervisor, port_id):
         super().__init__(port_id)
@@ -41,8 +44,9 @@ class Node(Interfaces):
         """
         Convert the old style WIC slot to a new style WIC slot and add the WIC
         to the node properties
-        :param old_wic: Old WIC slot
-        :param wic: WIC name
+
+        :param str old_wic: Old WIC slot
+        :param str wic: WIC name
         """
         new_wic = 'wic' + old_wic[-1]
         self.node['properties'][new_wic] = wic
@@ -50,7 +54,8 @@ class Node(Interfaces):
     def add_wic_ports(self, wic_slot):
         """
         Add the ports for a specific WIC to the node['ports'] dictionary
-        :param wic_slot: WIC Slot (wic0)
+
+        :param str wic_slot: WIC Slot (wic0)
         """
         wic_slot_number = int(wic_slot[3])
         wic_adapter = self.node['properties'][wic_slot]
@@ -77,7 +82,8 @@ class Node(Interfaces):
     def add_slot_ports(self, slot):
         """
         Add the ports to be added for a adapter card
-        :param slot: Slot name
+
+        :param str slot: Slot name
         """
         slot_nb = int(slot[4])
         slot_adapter = None
@@ -130,8 +136,9 @@ class Node(Interfaces):
     def add_device_items(self, item, device):
         """
         Add the various items from the device to the node
-        :param item: item key
-        :param device: dictionary containing items
+
+        :param str item: item key
+        :param dict device: dictionary containing items
         """
         if item in ('aux', 'console'):
             self.node['properties'][item] = device[item]
@@ -160,8 +167,9 @@ class Node(Interfaces):
     def calc_ethsw_port(self, port_num, port_def):
         """
         Split and create the port entry for an Ethernet Switch
-        :param port_num:
-        :param port_def:
+
+        :param str port_num: port number
+        :param str port_def: port definition
         """
         # Port String - access 1 SW2 1
         # 0: type 1: vlan 2: destination device 3: destination port
@@ -208,10 +216,11 @@ class Node(Interfaces):
     def calc_link(self, src_id, src_port, src_port_name, destination):
         """
         Add a link item for processing later
-        :param src_id: Source node ID
-        :param src_port: Source port ID
-        :param src_port_name: Source port name
-        :param destination: Destination (dictionary)
+
+        :param int src_id: Source node ID
+        :param int src_port: Source port ID
+        :param str src_port_name: Source port name
+        :param dict destination: Destination
         """
         link = {'source_node_id': src_id,
                 'source_port_id': src_port,
@@ -244,15 +253,16 @@ class Node(Interfaces):
     def get_nb_added_ports(self, old_port_id):
         """
         Get the number of ports add to the node
-        :param old_port_id: starting port_id (integer)
-        :return: number of ports added (integer)
+
+        :param int old_port_id: starting port_id
+        :return: number of ports added
+        :rtype: int
         """
         return self.port_id - old_port_id
 
     def calc_router_links(self):
         """
         Calculate a router link
-        :return:
         """
         for connection in self.interfaces:
             int_type = connection['from'][0]

@@ -17,6 +17,7 @@ Contents:
 
    installation
    usage
+   gns3converter
 
 Development
 ===========
@@ -27,4 +28,3 @@ include the topology with the issue report.
 * Public Repository: https://github.com/dlintott/gns3-converter
 * Issue Tracker: https://github.com/dlintott/gns3-converter/issues
 * License: GPL-3+
-

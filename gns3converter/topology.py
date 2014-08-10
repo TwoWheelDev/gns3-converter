@@ -21,6 +21,11 @@ from gns3converter.models import MODEL_TRANSFORM
 class LegacyTopology():
     """
     Legacy Topology (pre-1.0)
+
+    :param list sections: list of sections from
+        :py:meth:`gns3converter.converter.Converter.get_instances`
+    :param ConfigObj old_top: Old topology as returned by
+        :py:meth:`gns3converter.converter.Converter.read_topology`
     """
     def __init__(self, sections, old_top):
         self.devices = {}
@@ -33,6 +38,7 @@ class LegacyTopology():
     def add_conf_item(self, instance, item):
         """
         Add a hypervisor configuration item
+
         :param instance: Hypervisor instance
         :param item: Item to add
         """
@@ -46,6 +52,7 @@ class LegacyTopology():
     def add_physical_item(self, instance, item):
         """
         Add a physical item e.g router, cloud etc
+
         :param instance: Hypervisor instance
         :param item: Item to add
         """
@@ -74,8 +81,9 @@ class LegacyTopology():
     def device_typename(item):
         """
         Convert the old names to new-style names and types
-        :param item:
-        :return: device
+
+        :param str item: A device in the form of 'TYPE NAME'
+        :return: tuple containing device name and type details
         """
 
         dev_type = {'ROUTER': {'from': 'ROUTER',

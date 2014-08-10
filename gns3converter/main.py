@@ -22,8 +22,7 @@ from gns3converter import Converter, __version__
 
 def main():
     """
-    Convert the topology
-    :return:
+    Entry point for gns3-converter
     """
     print('GNS3 Topology Converter')
 
@@ -31,8 +30,7 @@ def main():
     args = arg_parse.parse_args()
 
     # Create a new instance of the the Converter
-    topology_path = os.path.abspath(args.topology)
-    gns3_conv = Converter(topology_path, args.debug)
+    gns3_conv = Converter(topology_abspath(args.topology), args.debug)
     # Read the old topology
     old_top = gns3_conv.read_topology()
 
@@ -49,26 +47,81 @@ def main():
     topology_links = gns3_conv.generate_links(topology_nodes)
 
     # Enter topology name
-    topology_name = input('Please enter a name for this topology: ')
-    topology_name = topology_name.replace(' ', '_')
+    topology_name = name()
 
     # Build the topology servers data
     topology_servers = [{'host': '127.0.0.1',
                          'id': 1,
                          'local': True,
                          'port': 8000}]
-    # Compile the topology node
-    topology = {'links': topology_links,
-                'nodes': topology_nodes,
-                'servers': topology_servers}
     # Compile all the sections ready for output
     assembled = {'name': topology_name,
                  'resources_type': 'local',
-                 'topology': topology,
+                 'topology': {'links': topology_links,
+                              'nodes': topology_nodes,
+                              'servers': topology_servers},
                  'type': 'topology',
                  'version': '1.0'}
 
     # Save the new topology
+    save(args, topology_name, gns3_conv, assembled)
+
+
+def setup_argparse():
+    """
+    Setup the argparse argument parser
+
+    :return: instance of argparse
+    :rtype: ArgumentParser
+    """
+    parser = argparse.ArgumentParser(
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        description='Convert old ini-style GNS3 topologies (<=0.8.7) to '
+                    'the newer\nversion 1+ JSON format')
+    parser.add_argument('--version',
+                        action='version',
+                        version='%(prog)s ' + __version__)
+    parser.add_argument('-o', '--output', help='Output the new topology to '
+                        'this directory')
+    parser.add_argument('topology', help='GNS3 .net topology file')
+    parser.add_argument('--debug',
+                        help='Enable debugging output',
+                        action='store_true')
+    return parser
+
+
+def topology_abspath(topology):
+    """
+    Get the absolute path of the topology file
+
+    :param str topology: Topology file
+    :return: Absolute path of topology file
+    :rtype: str
+    """
+    return os.path.abspath(topology)
+
+
+def name():
+    """
+    Input a name to save the converted topology as
+
+    :return: Name with spaces replaced by underscores
+    :rtype: str
+    """
+    topo_name = input('Please enter a name for this topology: ')
+    topo_name = topo_name.replace(' ', '_')
+    return topo_name
+
+
+def save(args, topology_name, converter, conv_topology):
+    """
+    Save the converted topology
+
+    :param args: Program arguments
+    :param topology_name: Name to save topology as
+    :param converter: Converter instance
+    :param conv_topology: The converted topology
+    """
     try:
         config_err = False
         if args.output:
@@ -77,7 +130,7 @@ def main():
             output_dir = os.getcwd()
 
         topology_dir = os.path.join(output_dir, topology_name)
-        old_topology_dir = os.path.dirname(topology_path)
+        old_topology_dir = os.path.dirname(topology_abspath(args.topology))
         new_config_dir = os.path.join(topology_dir, topology_name + '-files',
                                       'dynamips', 'configs')
         # Prepare the directory structure
@@ -88,7 +141,7 @@ def main():
                   ' new name' % topology_name)
             sys.exit(1)
         # Move the config files to the new topology folder
-        for config in gns3_conv.configs:
+        for config in converter.configs:
             old_config_file = os.path.join(old_topology_dir, config['old'])
             new_config_file = os.path.join(new_config_dir, config['new'])
             if os.path.isfile(old_config_file):
@@ -105,28 +158,12 @@ def main():
         filename = '%s.gns3' % topology_name
         file_path = os.path.join(topology_dir, filename)
         with open(file_path, 'w') as file:
-            json.dump(assembled, file, indent=4, sort_keys=True)
+            json.dump(conv_topology, file, indent=4, sort_keys=True)
             print('Your topology has been converted and can found in:\n'
                   '     %s' % topology_dir)
     except OSError as error:
         print(error)
 
-
-def setup_argparse():
-    parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        description='Convert old ini-style GNS3 topologies (<=0.8.7) to '
-                    'the newer\nversion 1+ JSON format')
-    parser.add_argument('--version',
-                        action='version',
-                        version='%(prog)s ' + __version__)
-    parser.add_argument('-o', '--output', help='Output the new topology to '
-                        'this directory')
-    parser.add_argument('topology', help='GNS3 .net topology file')
-    parser.add_argument('--debug',
-                        help='Enable debugging output',
-                        action='store_true')
-    return parser
 
 if __name__ == '__main__':
     main()

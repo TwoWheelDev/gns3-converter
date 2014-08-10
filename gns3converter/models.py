@@ -12,6 +12,14 @@
 #
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
+"""
+Convenience module for building a model matrix arranged by:
+    * Model
+    * Chassis (if applicable)
+and containing:
+    * 'ports' = number of ports
+    * 'type' = type of ports
+"""
 MODEL_MATRIX = {}
 
 for platform in ('c1700', 'c2600', 'c2691', 'c3725', 'c3745',
