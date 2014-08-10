@@ -212,7 +212,7 @@ class Converter():
             else:
                 dest_port = link['dest_port']
 
-            #Convert dest_dev to destination_node_id
+            # Convert dest_dev to destination_node_id
             (dest_node, dest_port_id) = self.convert_destination_to_id(
                 link['dest_dev'], dest_port, nodes)
 

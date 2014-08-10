@@ -172,7 +172,7 @@ class Node(Interfaces):
         else:
             destination = {'device': 'NIO',
                            'port': port_def[2]}
-        #port entry
+        # port entry
         port = {'id': self.port_id,
                 'name': port_num,
                 'port_number': int(port_num),
@@ -297,7 +297,7 @@ class Node(Interfaces):
                 raise RuntimeError('Error: Unknown connection string length '
                                    '(Length: %s)' % connection_len)
             self.node['properties']['nios'].append(nio)
-            #port entry
+            # port entry
             self.node['ports'].append({'id': self.port_id,
                                        'name': nio,
                                        'stub': True})
