@@ -41,6 +41,7 @@ else:
         author_email='daniel@serverb.co.uk',
         description='Convert old ini-style GNS3 topologies (<=0.8.7) to the '
                     'newer version 1+ JSON format',
+        long_description=open("README.rst", "r").read(),
         test_suite='tests',
         install_requires=['configobj'],
         package_data={'gns3converter': ['configspec']},
