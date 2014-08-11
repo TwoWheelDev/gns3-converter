@@ -163,12 +163,27 @@ class Node(Interfaces):
                                 'new': new_config})
         elif item.startswith('wic'):
             self.add_wic(item, device[item])
+        elif item == 'symbol':
+            self.set_symbol(device[item])
+
+    def set_symbol(self, symbol):
+        """
+        Set a symbol for a device
+
+        :param str symbol: Symbol to use
+        """
+        normal = ':/symbols/%s.normal.svg' % symbol
+        selected = ':/symbols/%s.selected.svg' % symbol
+
+        self.node['default_symbol'] = normal
+        self.node['hover_symbol'] = selected
 
     def calc_ethsw_port(self, port_num, port_def):
         """
         Split and create the port entry for an Ethernet Switch
 
-        :param str port_num: port number
+        :param port_num: port number
+        :type port_num: str or int
         :param str port_def: port definition
         """
         # Port String - access 1 SW2 1
@@ -182,7 +197,7 @@ class Node(Interfaces):
                            'port': port_def[2]}
         # port entry
         port = {'id': self.port_id,
-                'name': port_num,
+                'name': str(port_num),
                 'port_number': int(port_num),
                 'type': port_def[0],
                 'vlan': int(port_def[1])}

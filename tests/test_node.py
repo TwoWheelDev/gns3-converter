@@ -99,11 +99,11 @@ class TestNode(unittest.TestCase):
     def test_calc_ethsw_port_device(self):
         self.app.node['id'] = 1
         self.app.node['properties']['name'] = 'SW1'
-        exp_port = {'id': 1, 'name': 1, 'port_number': 1,
+        exp_port = {'id': 1, 'name': '1', 'port_number': 1,
                     'type': 'access', 'vlan': 1}
         exp_link = {'source_port_id': 1,
                     'source_node_id': 1,
-                    'source_port_name': 1,
+                    'source_port_name': '1',
                     'dest_dev': 'SW2',
                     'source_dev': 'SW1',
                     'dest_port': '1'}
@@ -118,11 +118,11 @@ class TestNode(unittest.TestCase):
     def test_calc_ethsw_port_nio(self):
         self.app.node['id'] = 1
         self.app.node['properties']['name'] = 'SW1'
-        exp_port = {'id': 1, 'name': 1, 'port_number': 1,
+        exp_port = {'id': 1, 'name': '1', 'port_number': 1,
                     'type': 'access', 'vlan': 1}
         exp_link = {'source_port_id': 1,
                     'source_node_id': 1,
-                    'source_port_name': 1,
+                    'source_port_name': '1',
                     'dest_dev': 'NIO',
                     'source_dev': 'SW1',
                     'dest_port': 'nio_gen_eth:eth0'}
@@ -222,6 +222,14 @@ class TestNode(unittest.TestCase):
         nb_added = self.app.get_nb_added_ports(0)
         self.assertIsInstance(nb_added, int)
         self.assertEqual(nb_added, 5)
+
+    def test_set_symbol(self):
+        self.app.set_symbol('multilayer_switch')
+
+        self.assertEqual(self.app.node['default_symbol'],
+                         ':/symbols/multilayer_switch.normal.svg')
+        self.assertEqual(self.app.node['hover_symbol'],
+                         ':/symbols/multilayer_switch.selected.svg')
 
 if __name__ == '__main__':
     unittest.main()
