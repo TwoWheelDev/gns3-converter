@@ -13,12 +13,75 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import unittest
+from configobj import ConfigObj
 from gns3converter.topology import LegacyTopology
 
 
 class TestTopology(unittest.TestCase):
     def setUp(self):
-        self.app = LegacyTopology('', '')
+        conf = ConfigObj()
+        conf['127.0.0.1:7200'] = {'3725': {'image': 'c3725.image',
+                                           'ram': 128,
+                                           'x': None,
+                                           'y': None},
+                                  'ROUTER R1': {'cnfg': 'configs/R1.cfg',
+                                                'console': 2101,
+                                                'aux': 2501,
+                                                'model': None}}
+        self.app = LegacyTopology([], conf)
+
+    def add_hv_details(self):
+        instance = '127.0.0.1:7200'
+        item = '3725'
+
+        self.app.add_conf_item(instance, item)
+
+    def test_add_conf_item(self):
+        instance = '127.0.0.1:7200'
+        item = '3725'
+
+        exp_res = {0: {'image': 'c3725.image',
+                       'model': 'c3725',
+                       'ram': 128}}
+
+        self.app.add_conf_item(instance, item)
+        self.assertDictEqual(self.app.conf, exp_res)
+
+    def test_add_physical_item_no_model(self):
+        self.add_hv_details()
+
+        instance = '127.0.0.1:7200'
+        item = 'ROUTER R1'
+
+        exp_res = {'R1': {'hv_id': 0,
+                          'node_id': 1,
+                          'type': 'Router',
+                          'cnfg': 'configs/R1.cfg',
+                          'console': 2101,
+                          'aux': 2501,
+                          'model': 'c3725'}}
+
+        self.app.add_physical_item(instance, item)
+        self.assertDictEqual(self.app.devices, exp_res)
+
+    def test_add_physical_item_with_model(self):
+        self.add_hv_details()
+
+        instance = '127.0.0.1:7200'
+        item = 'ROUTER R1'
+
+        exp_res = {'R1': {'hv_id': 0,
+                          'node_id': 1,
+                          'type': 'Router',
+                          'cnfg': 'configs/R1.cfg',
+                          'console': 2101,
+                          'aux': 2501,
+                          'model': 'c7200'}}
+
+        self.app.old_top['127.0.0.1:7200']['ROUTER R1']['model'] = '7200'
+
+        self.app.add_physical_item(instance, item)
+        self.assertDictEqual(self.app.devices, exp_res)
 
     def test_device_typename(self):
         exp_result = {'ROUTER R1': {'name': 'R1', 'type': 'Router'},
