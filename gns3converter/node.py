@@ -172,6 +172,9 @@ class Node(Interfaces):
 
         :param str symbol: Symbol to use
         """
+        if symbol == 'EtherSwitch router':
+            symbol = 'multilayer_switch'
+
         normal = ':/symbols/%s.normal.svg' % symbol
         selected = ':/symbols/%s.selected.svg' % symbol
 

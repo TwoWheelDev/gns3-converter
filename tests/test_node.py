@@ -245,8 +245,16 @@ class TestNode(unittest.TestCase):
         self.assertIsInstance(nb_added, int)
         self.assertEqual(nb_added, 5)
 
-    def test_set_symbol(self):
-        self.app.set_symbol('multilayer_switch')
+    def test_set_symbol_access_point(self):
+        self.app.set_symbol('access_point')
+
+        self.assertEqual(self.app.node['default_symbol'],
+                         ':/symbols/access_point.normal.svg')
+        self.assertEqual(self.app.node['hover_symbol'],
+                         ':/symbols/access_point.selected.svg')
+
+    def test_set_symbol_etherswitch_router(self):
+        self.app.set_symbol('EtherSwitch router')
 
         self.assertEqual(self.app.node['default_symbol'],
                          ':/symbols/multilayer_switch.normal.svg')
