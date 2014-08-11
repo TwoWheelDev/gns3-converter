@@ -46,6 +46,7 @@ else:
         package_data={'gns3converter': ['configspec']},
         entry_points={'console_scripts':
                     ['gns3-converter = gns3converter.main:main']},
+        platforms='any',
         classifiers=['Development Status :: 4 - Beta',
                      'Environment :: Console',
                      'Intended Audience :: Education',
