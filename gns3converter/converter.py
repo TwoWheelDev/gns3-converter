@@ -197,7 +197,10 @@ class Converter():
                 tmp_node.calc_router_links()
 
             elif tmp_node.device_info['type'] == 'Cloud':
-                tmp_node.calc_cloud_connection()
+                try:
+                    tmp_node.calc_cloud_connection()
+                except RuntimeError as err:
+                    print(err)
 
             # Get the data we need back from the node instance
             self.links.extend(tmp_node.links)

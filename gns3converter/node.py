@@ -303,6 +303,8 @@ class Node(Interfaces):
     def calc_cloud_connection(self):
         """
         Add the ports and nios for a cloud connection
+
+        :return: None on success or RuntimeError on error
         """
         # Connection String - SW1:1:nio_gen_eth:eth0
         # 0: Destination device 1: Destination port
@@ -319,11 +321,12 @@ class Node(Interfaces):
                 nio = '%s:%s:%s:%s' % (connection[2], connection[3],
                                        connection[4], connection[5])
             else:
-                raise RuntimeError('Error: Unknown connection string length '
-                                   '(Length: %s)' % connection_len)
+                return RuntimeError('Error: Unknown connection string length '
+                                    '(Length: %s)' % connection_len)
             self.node['properties']['nios'].append(nio)
             # port entry
             self.node['ports'].append({'id': self.port_id,
                                        'name': nio,
                                        'stub': True})
             self.port_id += 1
+            return None

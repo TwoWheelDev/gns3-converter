@@ -80,7 +80,7 @@ class TestNode(unittest.TestCase):
         self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
         self.assertEqual(self.app.port_id, 2)
 
-    def test_calc_cloud_connection(self):
+    def test_calc_cloud_connection_4(self):
         exp_result = {'id': 1,
                       'name': 'nio_gen_eth:eth0',
                       'stub': True}
@@ -91,6 +91,28 @@ class TestNode(unittest.TestCase):
         self.assertIsInstance(self.app.node['properties']['nios'][0], str)
         self.assertEqual(self.app.node['properties']['nios'][0],
                          'nio_gen_eth:eth0')
+        #Check Port dictionary
+        self.assertIsInstance(self.app.node['ports'][0], dict)
+        self.assertDictEqual(self.app.node['ports'][0], exp_result)
+        self.assertEqual(self.app.port_id, 2)
+
+    def test_calc_cloud_connection_5(self):
+        self.app.connections = 'SW1:1:nio_udp:30000:127.0.0.1'
+        self.app.calc_cloud_connection()
+
+        self.assertRaises(RuntimeError)
+
+    def test_calc_cloud_connection_6(self):
+        exp_result = {'id': 1,
+                      'name': 'nio_udp:30000:127.0.0.1:20000',
+                      'stub': True}
+        self.app.connections = 'SW1:1:nio_udp:30000:127.0.0.1:20000'
+        self.app.calc_cloud_connection()
+        #Check NIO String
+        self.assertIsInstance(self.app.node['properties']['nios'], list)
+        self.assertIsInstance(self.app.node['properties']['nios'][0], str)
+        self.assertEqual(self.app.node['properties']['nios'][0],
+                         'nio_udp:30000:127.0.0.1:20000')
         #Check Port dictionary
         self.assertIsInstance(self.app.node['ports'][0], dict)
         self.assertDictEqual(self.app.node['ports'][0], exp_result)
