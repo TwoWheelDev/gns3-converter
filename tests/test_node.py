@@ -22,7 +22,7 @@ class TestNode(unittest.TestCase):
                     'idlepc': '0x61616161',
                     'ram': '256',
                     'npe': 'npe-400',
-                    'chassis': '2620XM'}
+                    'chassis': '3640'}
 
         self.app = Node(hv_input, 1)
 
@@ -47,10 +47,13 @@ class TestNode(unittest.TestCase):
     def test_add_info_from_hv(self):
         exp_res_node_prop = {'image': 'c3725.image',
                              'idlepc': '0x61616161',
-                             'ram': '256'}
-        exp_res_device_info = {'model': '',
-                               'chassis': '2620XM',
+                             'ram': '256',
+                             'chassis': '3640'}
+        exp_res_device_info = {'model': 'c3600',
+                               'chassis': '3640',
                                'npe': 'npe-400'}
+
+        self.app.device_info['model'] = 'c3600'
 
         self.app.add_info_from_hv()
         self.assertDictEqual(exp_res_node_prop, self.app.node['properties'])
@@ -260,6 +263,42 @@ class TestNode(unittest.TestCase):
                          ':/symbols/multilayer_switch.normal.svg')
         self.assertEqual(self.app.node['hover_symbol'],
                          ':/symbols/multilayer_switch.selected.svg')
+
+    def test_calc_router_links(self):
+        self.app.interfaces.append({'to': 'R2 f0/0',
+                                    'from': 'f0/0'})
+        self.app.node['id'] = 1
+        self.app.node['properties']['name'] = 'R1'
+        self.app.device_info['model'] = 'c3725'
+        self.app.calc_mb_ports()
+
+        exp_res = {'source_node_id': 1,
+                   'source_port_id': 1,
+                   'source_port_name': 'FastEthernet0/0',
+                   'source_dev': 'R1',
+                   'dest_dev': 'R2',
+                   'dest_port': 'f0/0'}
+
+        self.app.calc_router_links()
+        self.assertDictEqual(self.app.links[0], exp_res)
+
+    def test_calc_router_links_nio(self):
+        self.app.interfaces.append({'to': 'nio_gen_eth:eth0',
+                                    'from': 'f0/0'})
+        self.app.node['id'] = 1
+        self.app.node['properties']['name'] = 'R1'
+        self.app.device_info['model'] = 'c3725'
+        self.app.calc_mb_ports()
+
+        exp_res = {'source_node_id': 1,
+                   'source_port_id': 1,
+                   'source_port_name': 'FastEthernet0/0',
+                   'source_dev': 'R1',
+                   'dest_dev': 'NIO',
+                   'dest_port': 'nio_gen_eth:eth0'}
+
+        self.app.calc_router_links()
+        self.assertDictEqual(self.app.links[0], exp_res)
 
 if __name__ == '__main__':
     unittest.main()
