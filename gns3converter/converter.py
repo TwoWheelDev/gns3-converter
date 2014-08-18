@@ -424,7 +424,7 @@ class Converter():
         """
         Generate the shapes for the topology
 
-        :param shapes: A dict of converted shapes from the old topology
+        :param dict shapes: A dict of converted shapes from the old topology
         :return: dict containing two lists (ellipse, rectangle)
         :rtype: dict
         """
@@ -444,7 +444,7 @@ class Converter():
         """
         Generate the notes list
 
-        :param notes: A dict of converted notes from the old topology
+        :param dict notes: A dict of converted notes from the old topology
         :return: List of notes for the the topology
         :rtype: list
         """
@@ -459,6 +459,13 @@ class Converter():
         return new_notes
 
     def generate_images(self, pixmaps):
+        """
+        Generate the images list and store the images to copy
+
+        :param dict pixmaps: A dict of converted pixmaps from the old topology
+        :return: A list of images
+        :rtype: list
+        """
         new_images = []
 
         for image in pixmaps:
