@@ -33,7 +33,7 @@ if sys.platform == 'win32':
 else:
     setup(
         name='gns3-converter',
-        version='0.1.0',
+        version='0.1.1',
         packages=['gns3converter'],
         url='https://github.com/dlintott/gns3-converter',
         license='GPLv3+',
