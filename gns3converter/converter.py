@@ -18,6 +18,7 @@
 from configobj import ConfigObj, flatten_errors
 from validate import Validator
 import sys
+import os.path
 from ipaddress import ip_address
 from pkg_resources import resource_stream
 from gns3converter.adapters import PORT_TYPES
@@ -41,6 +42,7 @@ class Converter():
         self.port_id = 1
         self.links = []
         self.configs = []
+        self.images = []
 
     def read_topology(self):
         """
@@ -99,7 +101,7 @@ class Converter():
                               :py:meth:`get_instances`
         :param ConfigObj old_top: old topology as processed by
                                   :py:meth:`read_topology`
-        :returns: tuple of lists containing hypervisors and devices
+        :returns: tuple of dicts containing hypervisors, devices and artwork
         :rtype: tuple
         """
         topo = LegacyTopology(sections, old_top)
@@ -108,13 +110,20 @@ class Converter():
             for item in sorted(old_top[instance]):
                 if isinstance(old_top[instance][item], dict):
                     if item in MODEL_TRANSFORM:
-                        # A configuration item
+                        # A configuration item (topo.conf)
                         topo.add_conf_item(instance, item)
+                    elif instance == 'GNS3-DATA' and \
+                            (item.startswith('SHAPE')
+                             or item.startswith('NOTE')
+                             or item.startswith('PIXMAP')):
+                        # Item is an artwork item e.g. shapes and notes from
+                        # GNS3-DATA
+                        topo.add_artwork_item(instance, item)
                     else:
-                        # It must be a physical item
+                        # It must be a physical item (topo.devices)
                         topo.add_physical_item(instance, item)
             topo.hv_id += 1
-        return topo.devices, topo.conf
+        return topo.devices, topo.conf, topo.artwork
 
     @staticmethod
     def get_instances(config):
@@ -409,3 +418,60 @@ class Converter():
                         port['link_id'] = link['id']
                         port['description'] = dest_desc
                         break
+
+    @staticmethod
+    def generate_shapes(shapes):
+        """
+        Generate the shapes for the topology
+
+        :param shapes: A dict of converted shapes from the old topology
+        :return: dict containing two lists (ellipse, rectangle)
+        :rtype: dict
+        """
+        new_shapes = {'ellipse': [], 'rectangle': []}
+
+        for shape in shapes:
+            tmp_shape = {}
+            for shape_item in shapes[shape]:
+                if shape_item != 'type':
+                    tmp_shape[shape_item] = shapes[shape][shape_item]
+
+            new_shapes[shapes[shape]['type']].append(tmp_shape)
+        return new_shapes
+
+    @staticmethod
+    def generate_notes(notes):
+        """
+        Generate the notes list
+
+        :param notes: A dict of converted notes from the old topology
+        :return: List of notes for the the topology
+        :rtype: list
+        """
+        new_notes = []
+
+        for note in notes:
+            tmp_note = {}
+            for note_item in notes[note]:
+                tmp_note[note_item] = notes[note][note_item]
+
+            new_notes.append(tmp_note)
+        return new_notes
+
+    def generate_images(self, pixmaps):
+        new_images = []
+
+        for image in pixmaps:
+            tmp_image = {}
+            for img_item in pixmaps[image]:
+                if img_item == 'path':
+                    path = os.path.join('images',
+                                        os.path.basename(
+                                            pixmaps[image][img_item]))
+                    tmp_image['path'] = path
+                    self.images.append(pixmaps[image][img_item])
+                else:
+                    tmp_image[img_item] = pixmaps[image][img_item]
+
+            new_images.append(tmp_image)
+        return new_images

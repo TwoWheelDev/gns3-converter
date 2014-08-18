@@ -34,6 +34,21 @@ class LegacyTopology():
         self.nid = 1
         self.sections = sections
         self.old_top = old_top
+        self.artwork = {'SHAPE': {}, 'NOTE': {}, 'PIXMAP': {}}
+
+    def add_artwork_item(self, instance, item):
+        """
+        Add an artwork item e.g. Shapes, Notes and Pixmaps
+
+        :param instance: Hypervisor instance
+        :param item: Item to add
+        """
+        (item_type, item_id) = item.split(' ')
+        self.artwork[item_type][item_id] = {}
+        for s_item in sorted(self.old_top[instance][item]):
+            if self.old_top[instance][item][s_item] is not None:
+                self.artwork[item_type][item_id][s_item] = \
+                    self.old_top[instance][item][s_item]
 
     def add_conf_item(self, instance, item):
         """

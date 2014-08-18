@@ -41,9 +41,31 @@ class TestConverter(unittest.TestCase):
         topology = self.app.read_topology()
         sections = self.app.get_instances(topology)
         sections.append('GNS3-DATA')
-        (devices, conf) = self.app.process_topology(sections, topology)
+        (devices, conf, artwork) = self.app.process_topology(sections,
+                                                             topology)
         self.assertDictEqual(tests.data.devices, devices)
         self.assertDictEqual(tests.data.conf, conf)
+        self.assertDictEqual({'SHAPE': {}, 'NOTE': {}, 'PIXMAP': {}}, artwork)
+
+    def test_generate_shapes(self):
+        shapes = {'1': {'type': 'ellipse', 'x': 20, 'y': 25, 'width': 500,
+                        'height': 250, 'border_style': 2},
+                  '2': {'type': 'rectangle', 'x': 40, 'y': 250, 'width': 250,
+                        'height': 275, 'border_style': 2}}
+        exp_res = {'ellipse': [{'x': 20, 'y': 25, 'width': 500,
+                                'height': 250, 'border_style': 2}],
+                   'rectangle': [{'x': 40, 'y': 250, 'width': 250,
+                                  'height': 275, 'border_style': 2}]}
+        res = self.app.generate_shapes(shapes)
+        self.assertDictEqual(res, exp_res)
+
+    def test_generate_notes(self):
+        notes = {'1': {'text': 'SomeText', 'x': 20, 'y': 25,
+                       'color': '#1a1a1a'}}
+        exp_res = [{'text': 'SomeText', 'x': 20, 'y': 25, 'color': '#1a1a1a'}]
+
+        res = self.app.generate_notes(notes)
+        self.assertListEqual(res, exp_res)
 
 if __name__ == '__main__':
     unittest.main()

@@ -39,12 +39,16 @@ def main():
     sections.append('GNS3-DATA')
 
     # Process the sections
-    (devices, conf) = gns3_conv.process_topology(sections, old_top)
+    (devices, conf, artwork) = gns3_conv.process_topology(sections, old_top)
 
     # Generate the nodes
     topology_nodes = gns3_conv.generate_nodes(devices, conf)
     # Generate the links
     topology_links = gns3_conv.generate_links(topology_nodes)
+
+    topology_notes = gns3_conv.generate_notes(artwork['NOTE'])
+    topology_shapes = gns3_conv.generate_shapes(artwork['SHAPE'])
+    topology_images = gns3_conv.generate_images(artwork['PIXMAP'])
 
     # Enter topology name
     topology_name = name()
@@ -62,6 +66,16 @@ def main():
                               'servers': topology_servers},
                  'type': 'topology',
                  'version': '1.0'}
+
+    if len(topology_notes) > 0:
+        assembled['topology']['notes'] = topology_notes
+
+    if len(topology_shapes['ellipse']) > 0:
+        assembled['topology']['ellipses'] = topology_shapes['ellipse']
+    if len(topology_shapes['rectangle']) > 0:
+        assembled['topology']['rectangles'] = topology_shapes['rectangle']
+    if len(topology_images) > 0:
+        assembled['topology']['images'] = topology_images
 
     # Save the new topology
     save(args, topology_name, gns3_conv, assembled)
@@ -124,6 +138,7 @@ def save(args, topology_name, converter, conv_topology):
     """
     try:
         config_err = False
+        image_err = False
         if args.output:
             output_dir = os.path.abspath(args.output)
         else:
@@ -131,29 +146,54 @@ def save(args, topology_name, converter, conv_topology):
 
         topology_dir = os.path.join(output_dir, topology_name)
         old_topology_dir = os.path.dirname(topology_abspath(args.topology))
-        new_config_dir = os.path.join(topology_dir, topology_name + '-files',
-                                      'dynamips', 'configs')
+        topology_files_dir = os.path.join(topology_dir, topology_name +
+                                          '-files')
+
         # Prepare the directory structure
         if not os.path.exists(topology_dir):
-            os.makedirs(new_config_dir)
+            os.makedirs(topology_files_dir)
         else:
             print('E: Topology folder for %s already exists, please choose a'
                   ' new name' % topology_name)
             sys.exit(1)
-        # Move the config files to the new topology folder
-        for config in converter.configs:
-            old_config_file = os.path.join(old_topology_dir, config['old'])
-            new_config_file = os.path.join(new_config_dir, config['new'])
-            if os.path.isfile(old_config_file):
-                # Copy and rename the config
-                shutil.copy(old_config_file, new_config_file)
-            else:
-                config_err = True
-                print('E: Unable to find %s' % config['old'])
+        # Move the dynamips config files to the new topology folder
+        if len(converter.configs) > 0:
+            dynamips_config_dir = os.path.join(topology_files_dir, 'dynamips',
+                                               'configs')
+            os.makedirs(dynamips_config_dir)
+            for config in converter.configs:
+                old_config_file = os.path.join(old_topology_dir, config['old'])
+                new_config_file = os.path.join(dynamips_config_dir,
+                                               config['new'])
+                if os.path.isfile(old_config_file):
+                    # Copy and rename the config
+                    shutil.copy(old_config_file, new_config_file)
+                else:
+                    config_err = True
+                    print('E: Unable to find %s' % config['old'])
+
+        # Move the image files to the new topology folder if applicable
+        if len(converter.images) > 0:
+            images_dir = os.path.join(topology_dir, topology_name + '-files',
+                                      'images')
+            os.makedirs(images_dir)
+            for image in converter.images:
+                old_image_file = os.path.abspath(image)
+                new_image_file = os.path.join(images_dir,
+                                              os.path.basename(image))
+                if os.path.isfile(os.path.abspath(old_image_file)):
+                    shutil.copy(old_image_file, new_image_file)
+                else:
+                    image_err = True
+                    print('E: Unable to find %s' % old_image_file)
 
         if config_err:
             print('W: Some router startup configurations could not be found\n'
                   '   to be copied to the new topology')
+
+        if image_err:
+            print('W: Some images could not be found to be copied to the \n'
+                  '   new topology')
 
         filename = '%s.gns3' % topology_name
         file_path = os.path.join(topology_dir, filename)

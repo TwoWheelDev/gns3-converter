@@ -36,6 +36,31 @@ class TestTopology(unittest.TestCase):
 
         self.app.add_conf_item(instance, item)
 
+    def add_artwork_item(self):
+        self.app.conf['GNS3-DATA'] = {'NOTE 1': {'text': 'SomeText',
+                                                 'x': 20, 'y': 25,
+                                                 'color': '#1a1a1a'},
+                                      'SHAPE 1': {'type': 'ellipse',
+                                                  'x': 20, 'y': 25,
+                                                  'width': 500,
+                                                  'height': 250,
+                                                  'border_style': 2}}
+
+        exp_res = {'SHAPE': {'1': {'type': 'ellipse',
+                                   'x': 20, 'y': 25,
+                                   'width': 500,
+                                   'height': 250,
+                                   'border_style': 2}},
+                   'NOTE': {'1': {'text': 'SomeText',
+                                  'x': 20, 'y': 25,
+                                  'color': '#1a1a1a'}}
+                   }
+
+        self.app.add_artwork_item('GNS3-DATA', 'SHAPE 1')
+        self.app.add_artwork_item('GNS3-DATA', 'NOTE 1')
+
+        self.assertDictEqual(self.app.artwork, exp_res)
+
     def test_add_conf_item(self):
         instance = '127.0.0.1:7200'
         item = '3725'
