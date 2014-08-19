@@ -26,6 +26,7 @@ from gns3converter.models import MODEL_TRANSFORM
 from gns3converter.node import Node
 from gns3converter.interfaces import INTERFACE_RE
 from gns3converter.topology import LegacyTopology
+from gns3converter.utils import fix_path
 
 
 class Converter():
@@ -475,7 +476,7 @@ class Converter():
                     path = os.path.join('images',
                                         os.path.basename(
                                             pixmaps[image][img_item]))
-                    tmp_image['path'] = path
+                    tmp_image['path'] = fix_path(path)
                     self.images.append(pixmaps[image][img_item])
                 else:
                     tmp_image[img_item] = pixmaps[image][img_item]

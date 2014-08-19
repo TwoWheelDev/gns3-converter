@@ -19,6 +19,7 @@ import os
 from gns3converter.adapters import ADAPTER_MATRIX, PORT_TYPES
 from gns3converter.models import MODEL_MATRIX
 from gns3converter.interfaces import INTERFACE_RE, ETHSWINT_RE, Interfaces
+from gns3converter.utils import fix_path
 
 
 class Node(Interfaces):
@@ -159,7 +160,7 @@ class Node(Interfaces):
             new_config = 'i%s_startup-config.cfg' % self.node['id']
             self.node['properties']['startup_config'] = new_config
 
-            self.config.append({'old': device[item],
+            self.config.append({'old': fix_path(device[item]),
                                 'new': new_config})
         elif item.startswith('wic'):
             self.add_wic(item, device[item])
