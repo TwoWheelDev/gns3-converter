@@ -11,3 +11,4 @@ gns3converter modules
    gns3converter.models
    gns3converter.node
    gns3converter.topology
+   gns3converter.utils
