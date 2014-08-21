@@ -1,3 +1,9 @@
+0.1.3   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Fix handling of NOTE text and color (Fixes #4)
+    * Correct the logic for handling ConfigObj validation errors
+    * Streamline the process of getting the topology sections
+
 0.1.2   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Correctly handle Windows paths when working on Unix (Fixes #2)
