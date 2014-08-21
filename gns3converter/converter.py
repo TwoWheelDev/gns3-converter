@@ -74,7 +74,7 @@ class Converter():
         res = config.validate(vtor, preserve_errors=True)
         if res and self._debug:
             print('Validation Passed')
-        else:
+        elif not res:
             for entry in flatten_errors(config, res):
                 # each entry is a tuple
                 (section_list, key, error) = entry
