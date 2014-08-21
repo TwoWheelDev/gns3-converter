@@ -19,3 +19,13 @@ version = 0.8.6
         z = 1.0
 [GNS3-DATA]
     configs = configs
+    [[NOTE 1]]
+        text = "Sales VLAN\n300 Users"
+        x = 48.0
+        y = -120.5
+        color = "#ff5500"
+    [[NOTE 2]]
+        text = "Servers VLAN\n20 Servers"
+        x = -220.0
+        y = -121.5
+        color = "#1a1a1a"

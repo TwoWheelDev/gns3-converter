@@ -28,9 +28,10 @@ class TestConverter(unittest.TestCase):
         self.app = Converter(self._topology)
 
     def test_read_topology(self):
+        self.maxDiff = None
         topology = self.app.read_topology()
         self.assertIsInstance(topology, ConfigObj)
-        self.assertEqual(tests.data.old_top, topology)
+        self.assertDictEqual(tests.data.old_top, topology)
 
     def test_get_instances(self):
         topology = self.app.read_topology()
@@ -45,7 +46,7 @@ class TestConverter(unittest.TestCase):
                                                              topology)
         self.assertDictEqual(tests.data.devices, devices)
         self.assertDictEqual(tests.data.conf, conf)
-        self.assertDictEqual({'SHAPE': {}, 'NOTE': {}, 'PIXMAP': {}}, artwork)
+        self.assertDictEqual(tests.data.artwork, artwork)
 
     def test_generate_shapes(self):
         shapes = {'1': {'type': 'ellipse', 'x': 20, 'y': 25, 'width': 500,
