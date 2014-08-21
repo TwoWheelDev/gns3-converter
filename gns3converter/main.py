@@ -34,12 +34,8 @@ def main():
     # Read the old topology
     old_top = gns3_conv.read_topology()
 
-    # Get the top-level sections from the topology
-    sections = gns3_conv.get_instances(old_top)
-    sections.append('GNS3-DATA')
-
     # Process the sections
-    (devices, conf, artwork) = gns3_conv.process_topology(sections, old_top)
+    (devices, conf, artwork) = gns3_conv.process_topology(old_top)
 
     # Generate the nodes
     topology_nodes = gns3_conv.generate_nodes(devices, conf)

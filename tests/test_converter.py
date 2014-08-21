@@ -33,17 +33,14 @@ class TestConverter(unittest.TestCase):
         self.assertIsInstance(topology, ConfigObj)
         self.assertDictEqual(tests.data.old_top, topology)
 
-    def test_get_instances(self):
+    def test_get_sections(self):
         topology = self.app.read_topology()
-        sections = self.app.get_instances(topology)
-        self.assertEqual(['127.0.0.1:7200'], sections)
+        sections = self.app.get_sections(topology)
+        self.assertEqual(['127.0.0.1:7200', 'GNS3-DATA'], sections)
 
     def test_process_topology(self):
         topology = self.app.read_topology()
-        sections = self.app.get_instances(topology)
-        sections.append('GNS3-DATA')
-        (devices, conf, artwork) = self.app.process_topology(sections,
-                                                             topology)
+        (devices, conf, artwork) = self.app.process_topology(topology)
         self.assertDictEqual(tests.data.devices, devices)
         self.assertDictEqual(tests.data.conf, conf)
         self.assertDictEqual(tests.data.artwork, artwork)
