@@ -208,6 +208,10 @@ class Converter():
                 except RuntimeError as err:
                     print(err)
 
+            elif tmp_node.device_info['type'] == 'FrameRelaySwitch':
+                tmp_node.process_mappings()
+                pass
+
             # Get the data we need back from the node instance
             self.links.extend(tmp_node.links)
             self.configs.extend(tmp_node.config)

@@ -22,8 +22,10 @@ import re
 # Regex matching interfaces (e.g. "f0/0")
 INTERFACE_RE = re.compile(r"""^(g|gi|f|fa|a|at|s|se|e|et|p|po|i|id|IDS-Sensor
 |an|Analysis-Module)([0-9]+)/([0-9]+)""", re.IGNORECASE)
-# Regex matching a number (means an Ethernet switch port config)
-ETHSWINT_RE = re.compile(r"""^([0-9]+)""")
+# Regex matching a number
+NUMBER_RE = re.compile(r"""^[0-9]+$""")
+# Regex matching a frame relay mapping
+MAPINT_RE = re.compile(r"""^[0-9]+:[0-9]+$""")
 
 
 class Interfaces():
@@ -37,3 +39,4 @@ class Interfaces():
         self.links = []
         self.port_id = port_id
         self.connections = None
+        self.mappings = []

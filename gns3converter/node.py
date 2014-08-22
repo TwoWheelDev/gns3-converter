@@ -18,7 +18,8 @@ This module is used for building Nodes
 import os
 from gns3converter.adapters import ADAPTER_MATRIX, PORT_TYPES
 from gns3converter.models import MODEL_MATRIX
-from gns3converter.interfaces import INTERFACE_RE, ETHSWINT_RE, Interfaces
+from gns3converter.interfaces import INTERFACE_RE, NUMBER_RE, MAPINT_RE,\
+    Interfaces
 from gns3converter.utils import fix_path
 
 
@@ -154,8 +155,13 @@ class Node(Interfaces):
         elif INTERFACE_RE.search(item):
             self.interfaces.append({'from': item,
                                     'to': device[item]})
-        elif ETHSWINT_RE.search(item):
-            self.calc_ethsw_port(item, device[item])
+        elif NUMBER_RE.search(item):
+            if self.device_info['type'] == 'EthernetSwitch':
+                self.calc_ethsw_port(item, device[item])
+            elif self.device_info['type'] == 'FrameRelaySwitch':
+                self.calc_frsw_port(item, device[item])
+        elif MAPINT_RE.search(item):
+            self.add_mapping((item, device[item]))
         elif item == 'cnfg':
             new_config = 'i%s_startup-config.cfg' % self.node['id']
             self.node['properties']['startup_config'] = new_config
@@ -210,6 +216,27 @@ class Node(Interfaces):
                        destination)
         self.port_id += 1
 
+    def calc_frsw_port(self, port_num, port_def):
+        """
+        Split and create the port entry for a Frame Relay Switch
+
+        :param port_num: port number
+        :type port_num: str or int
+        :param str port_def: port definition
+        """
+        port_def = port_def.split(' ')
+        destination = {'device': port_def[0],
+                       'port': port_def[1]}
+        # port entry
+        port = {'id': self.port_id,
+                'name': str(port_num),
+                'port_number': int(port_num)}
+        self.node['ports'].append(port)
+        self.calc_link(self.node['id'], self.port_id, port['name'],
+                       destination)
+
+        self.port_id += 1
+
     def calc_mb_ports(self):
         """
         Add the default ports to add to a router
@@ -249,6 +276,11 @@ class Node(Interfaces):
                 'dest_port': destination['port']}
 
         self.links.append(link)
+
+    def add_mapping(self, mapping):
+        mapping = {'source': mapping[0],
+                   'dest': mapping[1]}
+        self.mappings.append(mapping)
 
     def set_description(self):
         """
@@ -334,3 +366,19 @@ class Node(Interfaces):
                                        'stub': True})
             self.port_id += 1
             return None
+
+    def process_mappings(self):
+        """
+        Process the mappings for a Frame Relay switch. Removes duplicates and
+        adds the mappings to the node properties
+        """
+        for mapping_a in self.mappings:
+            for mapping_b in self.mappings:
+                if mapping_a['source'] == mapping_b['dest']:
+                    self.mappings.remove(mapping_b)
+                    break
+
+        self.node['properties']['mappings'] = {}
+        mappings = self.node['properties']['mappings']
+        for mapping in self.mappings:
+            mappings[mapping['source']] = mapping['dest']
