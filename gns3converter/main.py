@@ -42,6 +42,8 @@ def main():
     logging.basicConfig(level=logging_level,
                         format=LOG_MSG_FMT, datefmt=LOG_DATE_FMT)
 
+    logging.getLogger(__name__)
+
     # Create a new instance of the the Converter
     gns3_conv = Converter(topology_abspath(args.topology), args.debug)
     # Read the old topology
@@ -163,8 +165,9 @@ def save(args, topology_name, converter, conv_topology):
         if not os.path.exists(topology_dir):
             os.makedirs(topology_files_dir)
         else:
-            print('E: Topology folder for %s already exists, please choose a'
-                  ' new name' % topology_name)
+            logging.error('Topology folder for %s already exists, please '
+                          'specify a different name (using -n or --name)'
+                          % topology_name)
             sys.exit(1)
         # Move the dynamips config files to the new topology folder
         if len(converter.configs) > 0:
