@@ -106,7 +106,8 @@ def setup_argparse():
                         version='%(prog)s ' + __version__)
     parser.add_argument('-o', '--output', help='Output the new topology to '
                         'this directory')
-    parser.add_argument('topology', help='GNS3 .net topology file')
+    parser.add_argument('topology', nargs='?', default='topology.net',
+                        help='GNS3 .net topology file (default: topology.net)')
     parser.add_argument('--debug',
                         help='Enable debugging output',
                         action='store_true')
