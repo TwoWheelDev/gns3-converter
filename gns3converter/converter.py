@@ -19,6 +19,7 @@ from configobj import ConfigObj, flatten_errors
 from validate import Validator
 import sys
 import os.path
+import logging
 from pkg_resources import resource_stream
 from gns3converter.adapters import PORT_TYPES
 from gns3converter.models import MODEL_TRANSFORM
@@ -44,6 +45,9 @@ class Converter():
         self.configs = []
         self.images = []
 
+        self._log = logging.getLogger(__name__)
+        self._log.debug('Topology file: {}'.format(self._topology))
+
     def read_topology(self):
         """
         Read the ini-style topology file using ConfigObj
@@ -63,16 +67,16 @@ class Converter():
                                    list_values=False,
                                    encoding='utf-8')
             except SyntaxError:
-                print('Error loading .net file')
+                self._log.error('Error loading .net file')
                 exit()
         except IOError:
-            print('Can\'t open topology file')
+            self._log.error('Cannot open topology file')
             exit()
 
         vtor = Validator()
         res = config.validate(vtor, preserve_errors=True)
-        if res and self._debug:
-            print('Validation Passed')
+        if res:
+            self._log.debug('Validation passed')
         elif not res:
             for entry in flatten_errors(config, res):
                 # each entry is a tuple

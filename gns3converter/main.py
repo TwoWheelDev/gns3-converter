@@ -17,7 +17,12 @@ import os
 import sys
 import shutil
 import argparse
+import logging
 from gns3converter import Converter, __version__
+
+LOG_MSG_FMT = '[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d] ' \
+              '%(message)s'
+LOG_DATE_FMT = '%y%m%d %H:%M:%S'
 
 
 def main():
@@ -28,6 +33,14 @@ def main():
 
     arg_parse = setup_argparse()
     args = arg_parse.parse_args()
+
+    if args.debug:
+        logging_level = logging.DEBUG
+    else:
+        logging_level = logging.WARNING
+
+    logging.basicConfig(level=logging_level,
+                        format=LOG_MSG_FMT, datefmt=LOG_DATE_FMT)
 
     # Create a new instance of the the Converter
     gns3_conv = Converter(topology_abspath(args.topology), args.debug)
