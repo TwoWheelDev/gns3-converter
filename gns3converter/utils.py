@@ -29,3 +29,4 @@ def fix_path(path):
     path = os.path.normpath(path)
 
     return path
+
