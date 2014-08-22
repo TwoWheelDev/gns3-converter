@@ -154,11 +154,16 @@ class Converter():
                 tmp_node = Node({}, self.port_id)
             # Start building the structure
             tmp_node.node['properties']['name'] = device
-            tmp_node.node['label']['text'] = device
             tmp_node.node['id'] = devices[device]['node_id']
             tmp_node.node['x'] = devices[device]['x']
             tmp_node.node['y'] = devices[device]['y']
             tmp_node.device_info['type'] = devices[device]['type']
+
+            # Node Label
+            tmp_node.node['label']['text'] = device
+            if 'hx' in devices[device] and 'hy' in devices[device]:
+                tmp_node.node['label']['x'] = devices[device]['hx']
+                tmp_node.node['label']['y'] = devices[device]['hy']
 
             if 'model' in devices[device]:
                 tmp_node.device_info['model'] = devices[device]['model']
