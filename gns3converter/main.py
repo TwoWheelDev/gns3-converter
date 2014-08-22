@@ -62,7 +62,7 @@ def main():
     topology_images = gns3_conv.generate_images(artwork['PIXMAP'])
 
     # Enter topology name
-    topology_name = name()
+    topology_name = name(args)
 
     # Build the topology servers data
     topology_servers = [{'host': '127.0.0.1',
@@ -100,14 +100,15 @@ def setup_argparse():
     :rtype: ArgumentParser
     """
     parser = argparse.ArgumentParser(
-        formatter_class=argparse.RawDescriptionHelpFormatter,
         description='Convert old ini-style GNS3 topologies (<=0.8.7) to '
-                    'the newer\nversion 1+ JSON format')
+                    'the newer version 1+ JSON format')
     parser.add_argument('--version',
                         action='version',
                         version='%(prog)s ' + __version__)
-    parser.add_argument('-o', '--output', help='Output the new topology to '
-                        'this directory')
+    parser.add_argument('-n', '--name', help='Topology name (default uses the '
+                                             'name of the old project '
+                                             'directory)')
+    parser.add_argument('-o', '--output', help='Output directory')
     parser.add_argument('topology', nargs='?', default='topology.net',
                         help='GNS3 .net topology file (default: topology.net)')
     parser.add_argument('--debug',
@@ -127,15 +128,30 @@ def topology_abspath(topology):
     return os.path.abspath(topology)
 
 
-def name():
+def topology_dirname(topology):
     """
-    Input a name to save the converted topology as
+    Get the directory containing the topology file
 
-    :return: Name with spaces replaced by underscores
+    :param str topology: topology file
+    :return: directory which contains the topology file
     :rtype: str
     """
-    topo_name = input('Please enter a name for this topology: ')
-    topo_name = topo_name.replace(' ', '_')
+    return os.path.dirname(topology_abspath(topology))
+
+
+def name(args):
+    """
+    Calculate the name to save the converted topology as
+
+    :return: new topology name
+    :rtype: str
+    """
+    if args.name is not None:
+        logging.debug('topology name supplied')
+        topo_name = args.name
+    else:
+        logging.debug('topology name not supplied')
+        topo_name = os.path.basename(topology_dirname(args.topology))
     return topo_name
 
 
