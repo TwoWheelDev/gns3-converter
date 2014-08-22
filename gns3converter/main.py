@@ -199,7 +199,7 @@ def save(args, topology_name, converter, conv_topology):
                     shutil.copy(old_config_file, new_config_file)
                 else:
                     config_err = True
-                    print('E: Unable to find %s' % config['old'])
+                    logging.error('Unable to find %s' % config['old'])
 
         # Move the image files to the new topology folder if applicable
         if len(converter.images) > 0:
@@ -214,15 +214,15 @@ def save(args, topology_name, converter, conv_topology):
                     shutil.copy(old_image_file, new_image_file)
                 else:
                     image_err = True
-                    print('E: Unable to find %s' % old_image_file)
+                    logging.error('Unable to find %s' % old_image_file)
 
         if config_err:
-            print('W: Some router startup configurations could not be found\n'
-                  '   to be copied to the new topology')
+            logging.warning('Some router startup configurations could not be '
+                            'found to be copied to the new topology')
 
         if image_err:
-            print('W: Some images could not be found to be copied to the \n'
-                  '   new topology')
+            logging.warning('Some images could not be found to be copied to '
+                            'the new topology')
 
         filename = '%s.gns3' % topology_name
         file_path = os.path.join(topology_dir, filename)
@@ -231,7 +231,7 @@ def save(args, topology_name, converter, conv_topology):
             print('Your topology has been converted and can found in:\n'
                   '     %s' % topology_dir)
     except OSError as error:
-        print(error)
+        logging.error(error)
 
 
 if __name__ == '__main__':
