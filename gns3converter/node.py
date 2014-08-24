@@ -163,7 +163,8 @@ class Node(Interfaces):
         elif MAPINT_RE.search(item):
             self.add_mapping((item, device[item]))
         elif item == 'cnfg':
-            new_config = 'i%s_startup-config.cfg' % self.node['id']
+            new_config = os.path.join('configs', 'i%s_startup-config.cfg' %
+                                      self.node['id'])
             self.node['properties']['startup_config'] = new_config
 
             self.config.append({'old': fix_path(device[item]),

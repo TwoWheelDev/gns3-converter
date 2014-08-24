@@ -193,7 +193,7 @@ def save(args, topology_name, converter, conv_topology):
             for config in converter.configs:
                 old_config_file = os.path.join(old_topology_dir, config['old'])
                 new_config_file = os.path.join(dynamips_config_dir,
-                                               config['new'])
+                                               os.path.basename(config['new']))
                 if os.path.isfile(old_config_file):
                     # Copy and rename the config
                     shutil.copy(old_config_file, new_config_file)
