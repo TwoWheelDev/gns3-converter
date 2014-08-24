@@ -43,22 +43,25 @@ class LegacyTopology():
         :param instance: Hypervisor instance
         :param item: Item to add
         """
-        (item_type, item_id) = item.split(' ')
-        self.artwork[item_type][item_id] = {}
-        for s_item in sorted(self.old_top[instance][item]):
-            if self.old_top[instance][item][s_item] is not None:
-                s_detail = self.old_top[instance][item][s_item]
-                s_type = type(s_detail)
+        if 'interface' in self.old_top[instance][item]:
+            pass
+        else:
+            (item_type, item_id) = item.split(' ')
+            self.artwork[item_type][item_id] = {}
+            for s_item in sorted(self.old_top[instance][item]):
+                if self.old_top[instance][item][s_item] is not None:
+                    s_detail = self.old_top[instance][item][s_item]
+                    s_type = type(s_detail)
 
-                if item_type == 'NOTE' and s_type == str:
-                    # Fix any escaped newline characters
-                    s_detail = s_detail.replace('\\n', '\n')
+                    if item_type == 'NOTE' and s_type == str:
+                        # Fix any escaped newline characters
+                        s_detail = s_detail.replace('\\n', '\n')
 
-                if s_type == str and len(s_detail) > 1 \
-                        and s_detail[0] == '"' and s_detail[-1] == '"':
-                    s_detail = s_detail[1:-1]
+                    if s_type == str and len(s_detail) > 1 \
+                            and s_detail[0] == '"' and s_detail[-1] == '"':
+                        s_detail = s_detail[1:-1]
 
-                self.artwork[item_type][item_id][s_item] = s_detail
+                    self.artwork[item_type][item_id][s_item] = s_detail
 
     def add_conf_item(self, instance, item):
         """
