@@ -163,58 +163,132 @@ class JSONTopology():
 
     @property
     def nodes(self):
+        """
+        Returns the nodes
+
+        :return: topology nodes
+        """
         return self._nodes
 
     @nodes.setter
     def nodes(self, nodes):
+        """
+        Sets the nodes
+
+        :param list nodes: List of nodes from
+               :py:meth:`gns3converter.converter.Converter.generate_nodes`
+        """
         self._nodes = nodes
 
     @property
     def links(self):
+        """
+        Returns the links
+
+        :return: Topology links
+        """
         return self._links
 
     @links.setter
     def links(self, links):
+        """
+        Sets the links
+
+        :param list links: List of links from
+               :py:meth:`gns3converter.converter.Converter.generate_links`
+        """
         self._links = links
 
     @property
     def notes(self):
+        """
+        Returns the notes
+
+        :return: Topology notes
+        """
         return self._notes
 
     @notes.setter
     def notes(self, notes):
+        """
+        Sets the notes
+
+        :param list notes: List of notes from
+               :py:meth:`gns3converter.converter.Converter.generate_notes`
+        """
         self._notes = notes
 
     @property
     def shapes(self):
+        """
+        Returns the shapes
+
+        :return: Topology shapes
+        """
         return self._shapes
 
     @shapes.setter
     def shapes(self, shapes):
+        """
+        Sets the shapes
+
+        :param list shapes: List of shapes from
+               :py:meth:`gns3converter.converter.Converter.generate_shapes`
+        """
         self._shapes = shapes
 
     @property
     def images(self):
+        """
+        Returns the images
+
+        :return: Topology images
+        """
         return self._images
 
     @images.setter
     def images(self, images):
+        """
+        Sets the images
+
+        :param list images: List of images from
+               :py:meth:`gns3converter.converter.Converter.generate_images`
+        """
         self._images = images
 
     @property
     def servers(self):
+        """
+        Returns the servers
+
+        :return: Topology servers
+        """
         return self._servers
 
     @servers.setter
     def servers(self, servers):
+        """
+        Sets the servers
+
+        :param list servers: List of servers
+        """
         self._servers = servers
 
     @property
     def name(self):
+        """
+        Returns the topology name
+
+        :return: Topology name
+        """
         return self._name
 
     @name.setter
     def name(self, name):
+        """
+        Sets the topology name
+        :param str name: Topology name
+        """
         self._name = name
 
     def get_topology(self):
