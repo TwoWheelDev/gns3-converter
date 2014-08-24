@@ -14,7 +14,6 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import json
 import os
-import sys
 import shutil
 import argparse
 import logging
@@ -172,19 +171,14 @@ def save(args, topology_name, converter, conv_topology):
         else:
             output_dir = os.getcwd()
 
-        topology_dir = os.path.join(output_dir, topology_name)
         old_topology_dir = os.path.dirname(topology_abspath(args.topology))
-        topology_files_dir = os.path.join(topology_dir, topology_name +
+        topology_files_dir = os.path.join(output_dir, topology_name +
                                           '-files')
 
         # Prepare the directory structure
-        if not os.path.exists(topology_dir):
-            os.makedirs(topology_files_dir)
-        else:
-            logging.error('Topology folder for %s already exists, please '
-                          'specify a different name (using -n or --name)'
-                          % topology_name)
-            sys.exit(1)
+        if not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
         # Move the dynamips config files to the new topology folder
         if len(converter.configs) > 0:
             dynamips_config_dir = os.path.join(topology_files_dir, 'dynamips',
@@ -203,7 +197,7 @@ def save(args, topology_name, converter, conv_topology):
 
         # Move the image files to the new topology folder if applicable
         if len(converter.images) > 0:
-            images_dir = os.path.join(topology_dir, topology_name + '-files',
+            images_dir = os.path.join(output_dir, topology_name + '-files',
                                       'images')
             os.makedirs(images_dir)
             for image in converter.images:
@@ -225,11 +219,11 @@ def save(args, topology_name, converter, conv_topology):
                             'the new topology')
 
         filename = '%s.gns3' % topology_name
-        file_path = os.path.join(topology_dir, filename)
+        file_path = os.path.join(output_dir, filename)
         with open(file_path, 'w') as file:
             json.dump(conv_topology, file, indent=4, sort_keys=True)
             print('Your topology has been converted and can found in:\n'
-                  '     %s' % topology_dir)
+                  '     %s' % output_dir)
     except OSError as error:
         logging.error(error)
 
