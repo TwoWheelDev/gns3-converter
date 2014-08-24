@@ -8,29 +8,41 @@ Using gns3-converter
 
 Example
 =======
-By default the converted topology will be output to a sub-directory of the
-current working directory. The only argument that must be supplied, is the
-topology file to be converted.
+By default the converted topology will be output to the current working
+directory.
 
-To convert a topology just type:
+To convert a topology from the folder containing the topology.net file just
+type:
 
 ::
 
-    gns3-converter topology1.net
+    gns3-converter
 
-If the relevant are also present alongside the topology file these will be
-copied to the new topology and renamed accordingly.
+Alternatively you can specify a topology file to convert on the command line:
+
+::
+
+    gns3-converter ~/GNS3/Projects/CCNA_1/topology.net
+
+If the relevant configs are also present alongside the topology file these will
+be copied to the new topology and renamed accordingly.
 
 If you wish to output the converted topology to a different destination this
-can be done using the -o, --output argument like this:
+can be done using the -o or --output argument like this:
 
 ::
 
-    gns3-converter -o ../output topology.net
+    gns3-converter -o ../output
 
 or
 
 ::
 
-    gns3-converter --output ../output topology.net
+    gns3-converter --output ../output
 
+The name of the converted topology is taken from the folder containing the
+topology file. For example a topology in ~/GNS3/Projects/CCNA_1/topology.net
+will be named CCNA_1.
+
+It is also possible to specify a name for the new topology using the -n or
+--name in the same way as specifying the output directory.
