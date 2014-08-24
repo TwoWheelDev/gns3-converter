@@ -145,3 +145,105 @@ class LegacyTopology():
         item_type = item.split(' ')[0]
         name = item.replace('%s ' % dev_type[item_type]['from'], '')
         return name, dev_type[item_type]
+
+
+class JSONTopology():
+    """
+    v1.0 JSON Topology
+    """
+    def __init__(self):
+        self._nodes = None
+        self._links = None
+        self._notes = None
+        self._shapes = None
+        self._images = None
+        self._servers = [{'host': '127.0.0.1', 'id': 1, 'local': True,
+                          'port': 8000}]
+        self._name = None
+
+    @property
+    def nodes(self):
+        return self._nodes
+
+    @nodes.setter
+    def nodes(self, nodes):
+        self._nodes = nodes
+
+    @property
+    def links(self):
+        return self._links
+
+    @links.setter
+    def links(self, links):
+        self._links = links
+
+    @property
+    def notes(self):
+        return self._notes
+
+    @notes.setter
+    def notes(self, notes):
+        self._notes = notes
+
+    @property
+    def shapes(self):
+        return self._shapes
+
+    @shapes.setter
+    def shapes(self, shapes):
+        self._shapes = shapes
+
+    @property
+    def images(self):
+        return self._images
+
+    @images.setter
+    def images(self, images):
+        self._images = images
+
+    @property
+    def servers(self):
+        return self._servers
+
+    @servers.setter
+    def servers(self, servers):
+        self._servers = servers
+
+    @property
+    def name(self):
+        return self._name
+
+    @name.setter
+    def name(self, name):
+        self._name = name
+
+    def get_topology(self):
+        """
+        Get the converted topology ready for JSON encoding
+
+        :return: converted topology assembled into a single dict
+        :rtype: dict
+        """
+        topology = {'name': self._name,
+                    'resources_type': 'local',
+                    'topology': {},
+                    'type': 'topology',
+                    'version': '1.0'}
+
+        if self._links is not None:
+            topology['topology']['links'] = self._links
+        if self._nodes is not None:
+            topology['topology']['nodes'] = self._nodes
+        if self._servers is not None:
+            topology['topology']['servers'] = self._servers
+        if self._notes is not None:
+            topology['topology']['notes'] = self._notes
+        if self._shapes['ellipse'] is not None:
+            topology['topology']['ellipses'] = self._shapes['ellipse']
+        if self._shapes['rectangle'] is not None:
+            topology['topology']['rectangles'] = \
+                self._shapes['rectangle']
+        if self._images is not None:
+            topology['topology']['images'] = self._images
+
+        return topology

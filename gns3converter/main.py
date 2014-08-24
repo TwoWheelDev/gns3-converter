@@ -18,6 +18,7 @@ import shutil
 import argparse
 import logging
 from gns3converter import Converter, __version__
+from gns3converter.topology import JSONTopology
 
 LOG_MSG_FMT = '[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d] ' \
               '%(message)s'
@@ -47,48 +48,25 @@ def main():
     gns3_conv = Converter(topology_abspath(args.topology), args.debug)
     # Read the old topology
     old_top = gns3_conv.read_topology()
+    new_top = JSONTopology()
 
     # Process the sections
     (devices, conf, artwork) = gns3_conv.process_topology(old_top)
 
     # Generate the nodes
-    topology_nodes = gns3_conv.generate_nodes(devices, conf)
+    new_top.nodes = gns3_conv.generate_nodes(devices, conf)
     # Generate the links
-    topology_links = gns3_conv.generate_links(topology_nodes)
+    new_top.links = gns3_conv.generate_links(new_top.nodes)
 
-    topology_notes = gns3_conv.generate_notes(artwork['NOTE'])
-    topology_shapes = gns3_conv.generate_shapes(artwork['SHAPE'])
-    topology_images = gns3_conv.generate_images(artwork['PIXMAP'])
+    new_top.notes = gns3_conv.generate_notes(artwork['NOTE'])
+    new_top.shapes = gns3_conv.generate_shapes(artwork['SHAPE'])
+    new_top.images = gns3_conv.generate_images(artwork['PIXMAP'])
 
     # Enter topology name
-    topology_name = name(args)
-
-    # Build the topology servers data
-    topology_servers = [{'host': '127.0.0.1',
-                         'id': 1,
-                         'local': True,
-                         'port': 8000}]
-    # Compile all the sections ready for output
-    assembled = {'name': topology_name,
-                 'resources_type': 'local',
-                 'topology': {'links': topology_links,
-                              'nodes': topology_nodes,
-                              'servers': topology_servers},
-                 'type': 'topology',
-                 'version': '1.0'}
-
-    if len(topology_notes) > 0:
-        assembled['topology']['notes'] = topology_notes
-
-    if len(topology_shapes['ellipse']) > 0:
-        assembled['topology']['ellipses'] = topology_shapes['ellipse']
-    if len(topology_shapes['rectangle']) > 0:
-        assembled['topology']['rectangles'] = topology_shapes['rectangle']
-    if len(topology_images) > 0:
-        assembled['topology']['images'] = topology_images
+    new_top.name = name(args)
 
     # Save the new topology
-    save(args, topology_name, gns3_conv, assembled)
+    save(args, gns3_conv, new_top)
 
 
 def setup_argparse():
@@ -154,14 +132,13 @@ def name(args):
     return topo_name
 
 
-def save(args, topology_name, converter, conv_topology):
+def save(args, converter, json_topology):
     """
     Save the converted topology
 
     :param args: Program arguments
-    :param topology_name: Name to save topology as
-    :param converter: Converter instance
-    :param conv_topology: The converted topology
+    :param Converter converter: Converter instance
+    :param JSONTopology json_topology: JSON topology layout
     """
     try:
         config_err = False
@@ -171,6 +148,7 @@ def save(args, topology_name, converter, conv_topology):
         else:
             output_dir = os.getcwd()
 
+        topology_name = json_topology.name
         old_topology_dir = os.path.dirname(topology_abspath(args.topology))
         topology_files_dir = os.path.join(output_dir, topology_name +
                                           '-files')
@@ -221,7 +199,8 @@ def save(args, topology_name, converter, conv_topology):
         filename = '%s.gns3' % topology_name
         file_path = os.path.join(output_dir, filename)
         with open(file_path, 'w') as file:
-            json.dump(conv_topology, file, indent=4, sort_keys=True)
+            json.dump(json_topology.get_topology(), file, indent=4,
+                      sort_keys=True)
             print('Your topology has been converted and can found in:\n'
                   '     %s' % output_dir)
     except OSError as error:
