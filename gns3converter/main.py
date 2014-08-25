@@ -44,29 +44,16 @@ def main():
 
     logging.getLogger(__name__)
 
-    # Create a new instance of the the Converter
-    gns3_conv = Converter(topology_abspath(args.topology), args.debug)
-    # Read the old topology
-    old_top = gns3_conv.read_topology()
-    new_top = JSONTopology()
+    # Add the main topology to the list of files to convert
+    topology_files = [{'file': topology_abspath(args.topology),
+                       'snapshot': False}]
 
-    # Process the sections
-    (devices, conf, artwork) = gns3_conv.process_topology(old_top)
+    # Add any snapshot topologies to be converted
+    topology_files.extend(get_snapshots(args.topology))
 
-    # Generate the nodes
-    new_top.nodes = gns3_conv.generate_nodes(devices, conf)
-    # Generate the links
-    new_top.links = gns3_conv.generate_links(new_top.nodes)
-
-    new_top.notes = gns3_conv.generate_notes(artwork['NOTE'])
-    new_top.shapes = gns3_conv.generate_shapes(artwork['SHAPE'])
-    new_top.images = gns3_conv.generate_images(artwork['PIXMAP'])
-
-    # Enter topology name
-    new_top.name = name(args)
-
-    # Save the new topology
-    save(args, gns3_conv, new_top)
+    # Do the conversion
+    for topology in topology_files:
+        do_conversion(topology, args)
 
 
 def setup_argparse():
@@ -94,6 +81,37 @@ def setup_argparse():
     return parser
 
 
+def do_conversion(topology_def, args):
+    """
+    Convert the topology
+
+    :param dict topology_def: Dict containing topology file and snapshot bool
+    """
+    # Create a new instance of the the Converter
+    gns3_conv = Converter(topology_def['file'], args.debug)
+    # Read the old topology
+    old_top = gns3_conv.read_topology()
+    new_top = JSONTopology()
+
+    # Process the sections
+    (devices, conf, artwork) = gns3_conv.process_topology(old_top)
+
+    # Generate the nodes
+    new_top.nodes = gns3_conv.generate_nodes(devices, conf)
+    # Generate the links
+    new_top.links = gns3_conv.generate_links(new_top.nodes)
+
+    new_top.notes = gns3_conv.generate_notes(artwork['NOTE'])
+    new_top.shapes = gns3_conv.generate_shapes(artwork['SHAPE'])
+    new_top.images = gns3_conv.generate_images(artwork['PIXMAP'])
+
+    # Enter topology name
+    new_top.name = name(args)
+
+    # Save the new topology
+    save(args, gns3_conv, new_top, topology_def['snapshot'])
+
+
 def topology_abspath(topology):
     """
     Get the absolute path of the topology file
@@ -116,6 +134,26 @@ def topology_dirname(topology):
     return os.path.dirname(topology_abspath(topology))
 
 
+def get_snapshots(topology):
+    """
+    Return the paths of any snapshot topologies
+
+    :param str topology: topology file
+    :return: list of dicts containing snapshot topologies
+    :rtype: list
+    """
+    snapshots = []
+    snap_dir = os.path.join(topology_dirname(topology), 'snapshots')
+    if os.path.exists(snap_dir):
+        snaps = os.listdir(snap_dir)
+        for directory in snaps:
+            snap_top = os.path.join(snap_dir, directory, 'topology.net')
+            if os.path.exists(snap_top):
+                snapshots.append({'file': snap_top,
+                                  'snapshot': True})
+    return snapshots
+
+
 def name(args):
     """
     Calculate the name to save the converted topology as
@@ -132,26 +170,42 @@ def name(args):
     return topo_name
 
 
-def save(args, converter, json_topology):
+def save(args, converter, json_topology, snapshot):
     """
     Save the converted topology
 
     :param args: Program arguments
     :param Converter converter: Converter instance
     :param JSONTopology json_topology: JSON topology layout
+    :param bool snapshot: Snapshot Boolean
     """
     try:
         config_err = False
         image_err = False
+
+        old_topology_dir = topology_dirname(converter.topology)
+
         if args.output:
             output_dir = os.path.abspath(args.output)
         else:
             output_dir = os.getcwd()
 
         topology_name = json_topology.name
-        old_topology_dir = os.path.dirname(topology_abspath(args.topology))
-        topology_files_dir = os.path.join(output_dir, topology_name +
-                                          '-files')
+
+        if snapshot:
+            snapshot_name = os.path.basename(
+                topology_dirname(converter.topology))
+            output_dir = os.path.join(output_dir, 'snapshots', snapshot_name)
+            topology_files_dir = os.path.join(output_dir, snapshot_name +
+                                              '-files')
+            # TODO: Remove this warning once snapshots are implemented
+            logging.warning('GNS3 v1.0 does not currently support snapshots.'
+                            ' The snapshots for this project will not be '
+                            'saved')
+            return
+        else:
+            topology_files_dir = os.path.join(output_dir, topology_name +
+                                              '-files')
 
         # Prepare the directory structure
         if not os.path.exists(output_dir):
@@ -201,8 +255,9 @@ def save(args, converter, json_topology):
         with open(file_path, 'w') as file:
             json.dump(json_topology.get_topology(), file, indent=4,
                       sort_keys=True)
-            print('Your topology has been converted and can found in:\n'
-                  '     %s' % output_dir)
+            if not snapshot:
+                print('Your topology has been converted and can found in:\n'
+                      '     %s' % output_dir)
     except OSError as error:
         logging.error(error)
 

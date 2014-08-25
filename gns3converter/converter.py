@@ -29,7 +29,7 @@ from gns3converter.topology import LegacyTopology
 from gns3converter.utils import fix_path
 
 
-class Converter():
+class Converter(object):
     """
     GNS3 Topology Converter Class
 
@@ -47,6 +47,16 @@ class Converter():
 
         logging.getLogger(__name__)
         logging.debug('Topology file: {}'.format(self._topology))
+
+    @property
+    def topology(self):
+        """
+        Return the topology filename the converter is working on
+
+        :return: topology filename
+        :rtype: str
+        """
+        return self._topology
 
     def read_topology(self):
         """
