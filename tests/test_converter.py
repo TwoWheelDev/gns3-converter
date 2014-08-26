@@ -40,10 +40,10 @@ class TestConverter(unittest.TestCase):
 
     def test_process_topology(self):
         topology = self.app.read_topology()
-        (devices, conf, artwork) = self.app.process_topology(topology)
-        self.assertDictEqual(tests.data.devices, devices)
-        self.assertDictEqual(tests.data.conf, conf)
-        self.assertDictEqual(tests.data.artwork, artwork)
+        (processed) = self.app.process_topology(topology)
+        self.assertDictEqual(tests.data.devices, processed['devices'])
+        self.assertListEqual(tests.data.conf, processed['conf'])
+        self.assertDictEqual(tests.data.artwork, processed['artwork'])
 
     def test_generate_shapes(self):
         shapes = {'1': {'type': 'ellipse', 'x': 20, 'y': 25, 'width': 500,

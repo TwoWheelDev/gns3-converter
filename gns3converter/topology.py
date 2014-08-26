@@ -28,13 +28,13 @@ class LegacyTopology():
         :py:meth:`gns3converter.converter.Converter.read_topology`
     """
     def __init__(self, sections, old_top):
-        self.devices = {}
-        self.conf = {}
+        self.topology = {'devices': {},
+                         'conf': [],
+                         'artwork': {'SHAPE': {}, 'NOTE': {}, 'PIXMAP': {}}}
         self.hv_id = 0
         self.nid = 1
         self.sections = sections
         self.old_top = old_top
-        self.artwork = {'SHAPE': {}, 'NOTE': {}, 'PIXMAP': {}}
 
     def add_artwork_item(self, instance, item):
         """
@@ -47,7 +47,7 @@ class LegacyTopology():
             pass
         else:
             (item_type, item_id) = item.split(' ')
-            self.artwork[item_type][item_id] = {}
+            self.topology['artwork'][item_type][item_id] = {}
             for s_item in sorted(self.old_top[instance][item]):
                 if self.old_top[instance][item][s_item] is not None:
                     s_detail = self.old_top[instance][item][s_item]
@@ -61,7 +61,8 @@ class LegacyTopology():
                             and s_detail[0] == '"' and s_detail[-1] == '"':
                         s_detail = s_detail[1:-1]
 
-                    self.artwork[item_type][item_id][s_item] = s_detail
+                    self.topology['artwork'][item_type][item_id][s_item] = \
+                        s_detail
 
     def add_conf_item(self, instance, item):
         """
@@ -70,12 +71,14 @@ class LegacyTopology():
         :param instance: Hypervisor instance
         :param item: Item to add
         """
-        self.conf[self.hv_id] = {}
-        self.conf[self.hv_id]['model'] = MODEL_TRANSFORM[item]
+        tmp_conf = {}
+
         for s_item in sorted(self.old_top[instance][item]):
             if self.old_top[instance][item][s_item] is not None:
-                self.conf[self.hv_id][s_item] = \
-                    self.old_top[instance][item][s_item]
+                tmp_conf[s_item] = self.old_top[instance][item][s_item]
+
+        self.topology['conf'].append(tmp_conf)
+        self.hv_id = len(self.topology['conf']) - 1
 
     def add_physical_item(self, instance, item):
         """
@@ -84,25 +87,25 @@ class LegacyTopology():
         :param instance: Hypervisor instance
         :param item: Item to add
         """
-        (device_name, device_type) = self.device_typename(item)
-        self.devices[device_name] = {}
-        self.devices[device_name]['hv_id'] = self.hv_id
-        self.devices[device_name]['node_id'] = self.nid
-        self.devices[device_name]['type'] = device_type['type']
+        (name, dev_type) = self.device_typename(item)
+        self.topology['devices'][name] = {}
+        self.topology['devices'][name]['hv_id'] = self.hv_id
+        self.topology['devices'][name]['node_id'] = self.nid
+        self.topology['devices'][name]['type'] = dev_type['type']
 
         for s_item in sorted(self.old_top[instance][item]):
             if self.old_top[instance][item][s_item] is not None:
-                self.devices[device_name][s_item] = \
+                self.topology['devices'][name][s_item] = \
                     self.old_top[instance][item][s_item]
 
         if instance != 'GNS3-DATA' and \
-                self.devices[device_name]['type'] == 'Router':
-            if 'model' not in self.devices[device_name]:
-                self.devices[device_name]['model'] = \
-                    self.conf[self.hv_id]['model']
+                self.topology['devices'][name]['type'] == 'Router':
+            if 'model' not in self.topology['devices'][name]:
+                self.topology['devices'][name]['model'] = \
+                    self.topology['conf'][self.hv_id]['model']
             else:
-                self.devices[device_name]['model'] = \
-                    MODEL_TRANSFORM[self.devices[device_name]['model']]
+                self.topology['devices'][name]['model'] = MODEL_TRANSFORM[
+                    self.topology['devices'][name]['model']]
         self.nid += 1
 
     @staticmethod

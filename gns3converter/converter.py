@@ -134,8 +134,7 @@ class Converter(object):
                     else:
                         # It must be a physical item (topo.devices)
                         topo.add_physical_item(instance, item)
-            topo.hv_id += 1
-        return topo.devices, topo.conf, topo.artwork
+        return topo.topology
 
     @staticmethod
     def get_sections(config):
@@ -148,23 +147,25 @@ class Converter(object):
         """
         return config.sections
 
-    def generate_nodes(self, devices, hypervisors):
+    def generate_nodes(self, topology):
         """
         Generate a list of nodes for the new topology
 
-        :param list devices: list of devices from :py:meth:`process_topology`
-        :param list hypervisors: list of hypervisors from
-                                 :py:meth:`process_topology`
+        :param dict topology: processed topology from
+                              :py:meth:`process_topology`
         :return: a list of dicts on nodes
         :rtype: list
         """
         nodes = []
 
+        devices = topology['devices']
+        hypervisors = topology['conf']
+
         for device in sorted(devices):
             hv_id = devices[device]['hv_id']
-            if hv_id in hypervisors:
+            try:
                 tmp_node = Node(hypervisors[hv_id], self.port_id)
-            else:
+            except IndexError:
                 tmp_node = Node({}, self.port_id)
             # Start building the structure
             tmp_node.node['properties']['name'] = device

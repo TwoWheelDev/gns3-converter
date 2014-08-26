@@ -95,16 +95,16 @@ def do_conversion(topology_def, args):
     new_top = JSONTopology()
 
     # Process the sections
-    (devices, conf, artwork) = gns3_conv.process_topology(old_top)
+    (topology) = gns3_conv.process_topology(old_top)
 
     # Generate the nodes
-    new_top.nodes = gns3_conv.generate_nodes(devices, conf)
+    new_top.nodes = gns3_conv.generate_nodes(topology)
     # Generate the links
     new_top.links = gns3_conv.generate_links(new_top.nodes)
 
-    new_top.notes = gns3_conv.generate_notes(artwork['NOTE'])
-    new_top.shapes = gns3_conv.generate_shapes(artwork['SHAPE'])
-    new_top.images = gns3_conv.generate_images(artwork['PIXMAP'])
+    new_top.notes = gns3_conv.generate_notes(topology['artwork']['NOTE'])
+    new_top.shapes = gns3_conv.generate_shapes(topology['artwork']['SHAPE'])
+    new_top.images = gns3_conv.generate_images(topology['artwork']['PIXMAP'])
 
     # Enter topology name
     new_top.name = name(args)

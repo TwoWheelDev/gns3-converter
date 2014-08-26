@@ -122,9 +122,9 @@ devices = {'R1': {'aux': 2503, 'model': 'c3600', 'console': 2103,
                   'cnfg': 'configs/R1.cfg', 'x': -20.0, 'y': -12.0,
                   'hv_id': 0, 'z': 1.0}}
 
-conf = {0: {'idlepc': '0x6056c1ec', 'model': 'c3600',
-            'image': '/home/daniel/GNS3/Images/3660/c3660-jk9o3s-mz.124-19.'
-                     'image', 'chassis': '3660', 'sparsemem': True}}
+conf = [{'idlepc': '0x6056c1ec', 'model': 'c3600',
+         'image': '/home/daniel/GNS3/Images/3660/c3660-jk9o3s-mz.124-19.image',
+         'chassis': '3660', 'sparsemem': True}]
 
 artwork = {'SHAPE': {},
            'NOTE': {'1': {'text': 'Sales VLAN\n300 Users',
