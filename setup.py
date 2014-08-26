@@ -13,7 +13,7 @@ if sys.platform == 'win32':
 
     setup(
         name='gns3-converter',
-        version='0.3.0.dev1',
+        version=__import__('gns3converter').__version__,
         packages=['gns3converter'],
         url='https://github.com/dlintott/gns3-converter',
         license='GPLv3+',
@@ -33,7 +33,7 @@ if sys.platform == 'win32':
 else:
     setup(
         name='gns3-converter',
-        version='0.3.0.dev1',
+        version=__import__('gns3converter').__version__,
         packages=['gns3converter'],
         url='https://github.com/dlintott/gns3-converter',
         license='GPLv3+',

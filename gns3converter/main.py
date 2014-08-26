@@ -17,7 +17,8 @@ import os
 import shutil
 import argparse
 import logging
-from gns3converter import Converter, __version__
+from gns3converter import __version__
+from gns3converter.converter import Converter
 from gns3converter.topology import JSONTopology
 
 LOG_MSG_FMT = '[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d] ' \
