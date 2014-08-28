@@ -293,8 +293,6 @@ class Converter(object):
 
             self.add_node_connection(link, nodes)
 
-        if len(new_links) == 0:
-            new_links = None
         return new_links
 
     @staticmethod
@@ -465,9 +463,6 @@ class Converter(object):
 
             new_shapes[shapes[shape]['type']].append(tmp_shape)
 
-        for shape in new_shapes:
-            if len(new_shapes[shape]) == 0:
-                new_shapes[shape] = None
         return new_shapes
 
     @staticmethod
@@ -488,8 +483,6 @@ class Converter(object):
 
             new_notes.append(tmp_note)
 
-        if len(new_notes) == 0:
-            new_notes = None
         return new_notes
 
     def generate_images(self, pixmaps):
@@ -516,6 +509,4 @@ class Converter(object):
 
             new_images.append(tmp_image)
 
-        if len(new_images) == 0:
-            new_images = None
         return new_images
