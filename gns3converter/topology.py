@@ -201,7 +201,7 @@ class LegacyTopology():
                     'ATMSW': {'from': 'ATMSW',
                               'desc': 'ATM switch',
                               'type': 'ATMSwitch'},
-                    'ATMBR': {'from': 'ATMBR',
+                    'ATMBR': {'from': 'ATMBR',  # TODO: Investigate ATM Bridge
                               'desc': 'ATMBR',
                               'type': 'ATMBR'},
                     'Cloud': {'from': 'Cloud',
@@ -218,11 +218,11 @@ class JSONTopology():
     v1.0 JSON Topology
     """
     def __init__(self):
-        self._nodes = None
-        self._links = None
-        self._notes = None
-        self._shapes = None
-        self._images = None
+        self._nodes = []
+        self._links = []
+        self._notes = []
+        self._shapes = {}
+        self._images = []
         self._servers = [{'host': '127.0.0.1', 'id': 1, 'local': True,
                           'port': 8000}]
         self._name = None
@@ -233,6 +233,7 @@ class JSONTopology():
         Returns the nodes
 
         :return: topology nodes
+        :rtype: list
         """
         return self._nodes
 
@@ -252,6 +253,7 @@ class JSONTopology():
         Returns the links
 
         :return: Topology links
+        :rtype: list
         """
         return self._links
 
@@ -271,6 +273,7 @@ class JSONTopology():
         Returns the notes
 
         :return: Topology notes
+        :rtype: list
         """
         return self._notes
 
@@ -290,6 +293,7 @@ class JSONTopology():
         Returns the shapes
 
         :return: Topology shapes
+        :rtype: dict
         """
         return self._shapes
 
@@ -298,7 +302,7 @@ class JSONTopology():
         """
         Sets the shapes
 
-        :param list shapes: List of shapes from
+        :param dict shapes: List of shapes from
                :py:meth:`gns3converter.converter.Converter.generate_shapes`
         """
         self._shapes = shapes
@@ -309,6 +313,7 @@ class JSONTopology():
         Returns the images
 
         :return: Topology images
+        :rtype: list
         """
         return self._images
 
@@ -328,6 +333,7 @@ class JSONTopology():
         Returns the servers
 
         :return: Topology servers
+        :rtype: list
         """
         return self._servers
 
@@ -346,6 +352,7 @@ class JSONTopology():
         Returns the topology name
 
         :return: Topology name
+        :rtype: None or str
         """
         return self._name
 
@@ -370,20 +377,20 @@ class JSONTopology():
                     'type': 'topology',
                     'version': '1.0'}
 
-        if self._links is not None:
+        if self._links:
             topology['topology']['links'] = self._links
-        if self._nodes is not None:
+        if self._nodes:
             topology['topology']['nodes'] = self._nodes
-        if self._servers is not None:
+        if self._servers:
             topology['topology']['servers'] = self._servers
-        if self._notes is not None:
+        if self._notes:
             topology['topology']['notes'] = self._notes
-        if self._shapes['ellipse'] is not None:
+        if self._shapes['ellipse']:
             topology['topology']['ellipses'] = self._shapes['ellipse']
-        if self._shapes['rectangle'] is not None:
+        if self._shapes['rectangle']:
             topology['topology']['rectangles'] = \
                 self._shapes['rectangle']
-        if self._images is not None:
+        if self._images:
             topology['topology']['images'] = self._images
 
         return topology
