@@ -4,11 +4,15 @@ Welcome to gns3-converter's documentation!
 GNS3 Converter is designed to convert old ini-style GNS3 topologies (<=0.8.7)
 to the newer version v1+ JSON format for use in GNS3 v1+
 
-The converter should convert all IOS and Cloud Devices to the new format, but
-currently will not convert VirtualBox and QEMU nodes.
+The converter will convert all IOS, Cloud and VirtualBox devices to the new
+format. VPCS nodes will be converted to cloud devices due to lack of
+information the 0.8.7 topology files.
 
-Due to the change in implementation of VPCS nodes these will be converted to
-cloud objects.
+QEMU nodes will not be converted currently. This will be implemented once it
+has been implemented in GNS3 v1
+
+For topologies containing snapshots, the snapshots will not currently be saved
+until snapshots have been implemented in GNS3 v1
 
 Contents:
 
