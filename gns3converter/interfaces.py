@@ -26,9 +26,11 @@ INTERFACE_RE = re.compile(r"""^(g|gi|f|fa|a|at|s|se|e|et|p|po|i|id|IDS-Sensor
 NUMBER_RE = re.compile(r"""^[0-9]+$""")
 # Regex matching a frame relay mapping
 MAPINT_RE = re.compile(r"""^[0-9]+:[0-9]+$""")
+# Regex matching VirtualBox or QEMU interfaces
+VBQ_INT_RE = re.compile(r"""^(e|et|eth)([0-9])""", re.IGNORECASE)
 
 
-class Interfaces():
+class Interfaces(object):
     """
     Base Interface Class
 

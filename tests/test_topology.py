@@ -108,7 +108,7 @@ class TestTopology(unittest.TestCase):
     def test_device_typename(self):
         exp_result = {'ROUTER R1': {'name': 'R1', 'type': 'Router'},
                       'QEMU Q1': {'name': 'Q1', 'type': 'QEMU'},
-                      'VBOX V1': {'name': 'V1', 'type': 'VBOX'},
+                      'VBOX V1': {'name': 'V1', 'type': 'VirtualBoxVM'},
                       'FRSW FR1': {'name': 'FR1', 'type': 'FrameRelaySwitch'},
                       'ETHSW SW1': {'name': 'SW1', 'type': 'EthernetSwitch'},
                       'Hub Hub1': {'name': 'Hub1', 'type': 'EthernetHub'},

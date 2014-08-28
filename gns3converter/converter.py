@@ -24,7 +24,7 @@ from pkg_resources import resource_stream
 from gns3converter.adapters import PORT_TYPES
 from gns3converter.models import MODEL_TRANSFORM
 from gns3converter.node import Node
-from gns3converter.interfaces import INTERFACE_RE
+from gns3converter.interfaces import INTERFACE_RE, VBQ_INT_RE
 from gns3converter.topology import LegacyTopology
 from gns3converter.utils import fix_path
 
@@ -119,6 +119,12 @@ class Converter(object):
         topo = LegacyTopology(sections, old_top)
 
         for instance in sorted(sections):
+
+            if instance.startswith('vbox') \
+                    and isinstance(old_top[instance]['VBoxDevice'], dict):
+                topo.add_conf_item(instance, 'VBoxDevice')
+                old_top[instance].pop('VBoxDevice')
+
             for item in sorted(old_top[instance]):
                 if isinstance(old_top[instance][item], dict):
                     if item in MODEL_TRANSFORM:
@@ -212,7 +218,7 @@ class Converter(object):
                     tmp_node.node['properties']['slot0'] = 'Leopard-2FE'
 
                 # Calculate the router links
-                tmp_node.calc_router_links()
+                tmp_node.calc_device_links()
 
             elif tmp_node.device_info['type'] == 'Cloud':
                 try:
@@ -222,6 +228,11 @@ class Converter(object):
 
             elif tmp_node.device_info['type'] == 'FrameRelaySwitch':
                 tmp_node.process_mappings()
+
+            elif tmp_node.device_info['type'] == 'VirtualBoxVM':
+                tmp_node.add_to_virtualbox()
+                tmp_node.add_virtualbox_ports()
+                tmp_node.calc_device_links()
 
             # Get the data we need back from the node instance
             self.links.extend(tmp_node.links)
@@ -244,7 +255,8 @@ class Converter(object):
 
         for link in self.links:
             # Expand port name if required
-            if INTERFACE_RE.search(link['dest_port']):
+            if INTERFACE_RE.search(link['dest_port'])\
+                    or VBQ_INT_RE.search(link['dest_port']):
                 int_type = link['dest_port'][0]
                 dest_port = link['dest_port'].replace(
                     int_type, PORT_TYPES[int_type.upper()])

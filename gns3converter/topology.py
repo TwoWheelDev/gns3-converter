@@ -31,10 +31,66 @@ class LegacyTopology():
         self.topology = {'devices': {},
                          'conf': [],
                          'artwork': {'SHAPE': {}, 'NOTE': {}, 'PIXMAP': {}}}
-        self.hv_id = 0
-        self.nid = 1
         self.sections = sections
         self.old_top = old_top
+        self._id = {'hv_id': 0,
+                    'nid': 1,
+                    'vbox_id': 1}
+
+    @property
+    def hv_id(self):
+        """
+        Return the Hypervisor ID
+
+        :return: Hypervisor ID
+        :rtype: int
+        """
+        return self._id['hv_id']
+
+    @hv_id.setter
+    def hv_id(self, value):
+        """
+        Set the Hypervisor ID
+
+        :param int value: Hypervisor ID
+        """
+        self._id['hv_id'] = value
+
+    @property
+    def nid(self):
+        """
+        Return the node ID
+
+        :return: Node ID
+        :rtype: int
+        """
+        return self._id['nid']
+
+    @nid.setter
+    def nid(self, value):
+        """
+        Set the node ID
+        :param int value: Node ID
+        """
+        self._id['nid'] = value
+
+    @property
+    def vbox_id(self):
+        """
+        Return the VBox ID
+        :return: VBox ID
+        :rtype: int
+        """
+        return self._id['vbox_id']
+
+    @vbox_id.setter
+    def vbox_id(self, value):
+        """
+        Set the VBox ID
+
+        :param int value: VBox ID
+        """
+        self._id['vbox_id'] = value
 
     def add_artwork_item(self, instance, item):
         """
@@ -73,6 +129,9 @@ class LegacyTopology():
         """
         tmp_conf = {}
 
+        if item != 'VBoxDevice':
+            tmp_conf['model'] = MODEL_TRANSFORM[item]
+
         for s_item in sorted(self.old_top[instance][item]):
             if self.old_top[instance][item][s_item] is not None:
                 tmp_conf[s_item] = self.old_top[instance][item][s_item]
@@ -107,6 +166,9 @@ class LegacyTopology():
             else:
                 self.topology['devices'][name]['model'] = MODEL_TRANSFORM[
                     self.topology['devices'][name]['model']]
+        elif dev_type['type'] == 'VirtualBoxVM':
+            self.topology['devices'][name]['vbox_id'] = self.vbox_id
+            self.vbox_id += 1
         self.nid += 1
 
     @staticmethod
@@ -125,8 +187,8 @@ class LegacyTopology():
                              'desc': 'QEMU',
                              'type': 'QEMU'},
                     'VBOX': {'from': 'VBOX',
-                             'desc': 'VBOX',
-                             'type': 'VBOX'},
+                             'desc': 'VirtualBox VM',
+                             'type': 'VirtualBoxVM'},
                     'FRSW': {'from': 'FRSW',
                              'desc': 'Frame Relay switch',
                              'type': 'FrameRelaySwitch'},
@@ -325,3 +387,16 @@ class JSONTopology():
             topology['topology']['images'] = self._images
 
         return topology
+
+    def get_vboxes(self):
+        """
+        Get the maximum ID of the VBoxes
+
+        :return: Maximum VBox ID
+        :rtype: int
+        """
+        vbox_list = []
+        for node in self.nodes:
+            if node['type'] == 'VirtualBoxVM':
+                vbox_list.append(node['vbox_id'])
+        return max(vbox_list)

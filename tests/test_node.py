@@ -265,7 +265,7 @@ class TestNode(unittest.TestCase):
         self.assertEqual(self.app.node['hover_symbol'],
                          ':/symbols/multilayer_switch.selected.svg')
 
-    def test_calc_router_links(self):
+    def test_calc_device_links(self):
         self.app.interfaces.append({'to': 'R2 f0/0',
                                     'from': 'f0/0'})
         self.app.node['id'] = 1
@@ -280,10 +280,10 @@ class TestNode(unittest.TestCase):
                    'dest_dev': 'R2',
                    'dest_port': 'f0/0'}
 
-        self.app.calc_router_links()
+        self.app.calc_device_links()
         self.assertDictEqual(self.app.links[0], exp_res)
 
-    def test_calc_router_links_nio(self):
+    def test_calc_device_links_nio(self):
         self.app.interfaces.append({'to': 'nio_gen_eth:eth0',
                                     'from': 'f0/0'})
         self.app.node['id'] = 1
@@ -298,7 +298,7 @@ class TestNode(unittest.TestCase):
                    'dest_dev': 'NIO',
                    'dest_port': 'nio_gen_eth:eth0'}
 
-        self.app.calc_router_links()
+        self.app.calc_device_links()
         self.assertDictEqual(self.app.links[0], exp_res)
 
 if __name__ == '__main__':

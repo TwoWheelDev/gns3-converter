@@ -243,6 +243,14 @@ def save(args, converter, json_topology, snapshot):
                     image_err = True
                     logging.error('Unable to find %s' % old_image_file)
 
+        # Create the vbox working directories if applicable
+        vbox_max = json_topology.get_vboxes()
+        if vbox_max > 0:
+            for i in range(1, vbox_max + 1):
+                vbox_dir = os.path.join(output_dir, topology_name + '-files',
+                                        'vbox', 'vm-%s' % i)
+                os.makedirs(vbox_dir)
+
         if config_err:
             logging.warning('Some router startup configurations could not be '
                             'found to be copied to the new topology')

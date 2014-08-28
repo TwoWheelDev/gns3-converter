@@ -19,7 +19,7 @@ import os
 from gns3converter.adapters import ADAPTER_MATRIX, PORT_TYPES
 from gns3converter.models import MODEL_MATRIX
 from gns3converter.interfaces import INTERFACE_RE, NUMBER_RE, MAPINT_RE,\
-    Interfaces
+    VBQ_INT_RE, Interfaces
 from gns3converter.utils import fix_path
 
 
@@ -41,6 +41,7 @@ class Node(Interfaces):
                             'npe': None}
         self.hypervisor = hypervisor
         self.config = []
+        self.base_ports = {'vbox_console': 3501}
 
     def add_wic(self, old_wic, wic):
         """
@@ -152,7 +153,7 @@ class Node(Interfaces):
                 self.node['properties'][item] = device[item]
         elif item == 'connections':
             self.connections = device[item]
-        elif INTERFACE_RE.search(item):
+        elif INTERFACE_RE.search(item) or VBQ_INT_RE.search(item):
             self.interfaces.append({'from': item,
                                     'to': device[item]})
         elif NUMBER_RE.search(item):
@@ -173,6 +174,39 @@ class Node(Interfaces):
             self.add_wic(item, device[item])
         elif item == 'symbol':
             self.set_symbol(device[item])
+        elif item == 'nics':
+            self.node['properties']['adapters'] = device[item]
+        elif item == 'image':
+            self.node['properties']['vmname'] = device[item]
+        elif item == 'vbox_id':
+            self.node['vbox_id'] = device[item]
+
+    def add_to_virtualbox(self):
+        """
+        Add additional parameters that were in the VBoxDevice section or not
+        present
+        """
+        # VirtualBox Image
+        if 'vmname' not in self.node['properties']:
+            self.node['properties']['vmname'] = self.hypervisor['image']
+        # Number of adapters
+        if 'adapters' not in self.node['properties']:
+            self.node['properties']['adapters'] = self.hypervisor['nics']
+        # Console Port
+        if 'console' not in self.node['properties']:
+            self.node['properties']['console'] = \
+                self.base_ports['vbox_console'] + self.node['vbox_id'] - 1
+
+    def add_virtualbox_ports(self):
+        """
+        Add ethernet ports to the virtualbox node
+        """
+        for i in range(self.node['properties']['adapters']):
+            port = {'id': self.port_id,
+                    'name': 'Ethernet%s' % i,
+                    'port_number': i}
+            self.node['ports'].append(port)
+            self.port_id += 1
 
     def set_symbol(self, symbol):
         """
@@ -312,16 +346,16 @@ class Node(Interfaces):
         """
         return self.port_id - old_port_id
 
-    def calc_router_links(self):
+    def calc_device_links(self):
         """
-        Calculate a router link
+        Calculate a router or VirtualBox link
         """
         for connection in self.interfaces:
             int_type = connection['from'][0]
             int_name = connection['from'].replace(int_type,
                                                   PORT_TYPES[int_type.upper()])
             # Get the source port id
-            src_port = 0
+            src_port = None
             for port in self.node['ports']:
                 if int_name == port['name']:
                     src_port = port['id']
