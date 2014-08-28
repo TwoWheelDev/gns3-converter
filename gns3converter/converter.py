@@ -240,7 +240,7 @@ class Converter(object):
         :return: list of links
         :rtype: list
         """
-        links = []
+        new_links = []
 
         for link in self.links:
             # Expand port name if required
@@ -259,28 +259,31 @@ class Converter(object):
                    (link['source_dev'], link['source_port_name'],
                     dest_details['name'], dest_port)
 
-            links.append({'description': desc,
-                          'destination_node_id': dest_details['id'],
-                          'destination_port_id': dest_details['pid'],
-                          'source_port_id': link['source_port_id'],
-                          'source_node_id': link['source_node_id']})
+            new_links.append({'description': desc,
+                              'destination_node_id': dest_details['id'],
+                              'destination_port_id': dest_details['pid'],
+                              'source_port_id': link['source_port_id'],
+                              'source_node_id': link['source_node_id']})
 
         # Remove duplicate links and add link_id
         link_id = 1
-        for link in links:
+        for link in new_links:
             t_link = str(link['source_node_id']) + ':' + \
                 str(link['source_port_id'])
-            for link2 in links:
+            for link2 in new_links:
                 d_link = str(link2['destination_node_id']) + ':' + \
                     str(link2['destination_port_id'])
                 if t_link == d_link:
-                    links.remove(link2)
+                    new_links.remove(link2)
                     break
             link['id'] = link_id
             link_id += 1
 
             self.add_node_connection(link, nodes)
-        return links
+
+        if len(new_links) == 0:
+            new_links = None
+        return new_links
 
     @staticmethod
     def device_id_from_name(device_name, nodes):
@@ -449,6 +452,10 @@ class Converter(object):
                     tmp_shape[shape_item] = shapes[shape][shape_item]
 
             new_shapes[shapes[shape]['type']].append(tmp_shape)
+
+        for shape in new_shapes:
+            if len(new_shapes[shape]) == 0:
+                new_shapes[shape] = None
         return new_shapes
 
     @staticmethod
@@ -468,6 +475,9 @@ class Converter(object):
                 tmp_note[note_item] = notes[note][note_item]
 
             new_notes.append(tmp_note)
+
+        if len(new_notes) == 0:
+            new_notes = None
         return new_notes
 
     def generate_images(self, pixmaps):
@@ -493,4 +503,7 @@ class Converter(object):
                     tmp_image[img_item] = pixmaps[image][img_item]
 
             new_images.append(tmp_image)
+
+        if len(new_images) == 0:
+            new_images = None
         return new_images
