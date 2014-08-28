@@ -223,6 +223,7 @@ class TestNode(unittest.TestCase):
 
     def test_set_description_cloud(self):
         self.app.device_info['type'] = 'Cloud'
+        self.app.device_info['desc'] = 'Cloud'
 
         self.app.set_description()
         self.assertEqual(self.app.node['description'], 'Cloud')

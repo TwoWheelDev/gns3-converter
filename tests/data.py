@@ -120,7 +120,7 @@ old_top = {
 devices = {'R1': {'aux': 2503, 'model': 'c3600', 'console': 2103,
                   'f0/0': 'SW1 2', 'node_id': 1, 'type': 'Router',
                   'cnfg': 'configs/R1.cfg', 'x': -20.0, 'y': -12.0,
-                  'hv_id': 0, 'z': 1.0}}
+                  'hv_id': 0, 'z': 1.0, 'desc': 'Router'}}
 
 conf = [{'idlepc': '0x6056c1ec', 'model': 'c3600',
          'image': '/home/daniel/GNS3/Images/3660/c3660-jk9o3s-mz.124-19.image',

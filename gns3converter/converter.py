@@ -173,6 +173,7 @@ class Converter(object):
             tmp_node.node['x'] = devices[device]['x']
             tmp_node.node['y'] = devices[device]['y']
             tmp_node.device_info['type'] = devices[device]['type']
+            tmp_node.device_info['desc'] = devices[device]['desc']
 
             # Node Label
             tmp_node.node['label']['text'] = device

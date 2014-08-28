@@ -291,7 +291,7 @@ class Node(Interfaces):
             self.node['description'] = '%s %s' % (self.device_info['type'],
                                                   self.device_info['model'])
         else:
-            self.node['description'] = self.device_info['type']
+            self.node['description'] = self.device_info['desc']
 
     def set_type(self):
         """

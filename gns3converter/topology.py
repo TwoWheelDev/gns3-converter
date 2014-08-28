@@ -92,6 +92,7 @@ class LegacyTopology():
         self.topology['devices'][name]['hv_id'] = self.hv_id
         self.topology['devices'][name]['node_id'] = self.nid
         self.topology['devices'][name]['type'] = dev_type['type']
+        self.topology['devices'][name]['desc'] = dev_type['desc']
 
         for s_item in sorted(self.old_top[instance][item]):
             if self.old_top[instance][item][s_item] is not None:
