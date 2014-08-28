@@ -1,8 +1,11 @@
-0.3.0.dev1  Daniel Lintott  <daniel@serverb.co.uk>
+0.3.0.dev2  Daniel Lintott  <daniel@serverb.co.uk>
 
     * Implement snapshot support based upon legacy snapshot system.
       This will not currently work until we can confirm how snapshots will work
       in GNS3 v1.0
+    * Change how we retrieve the version number for use in setup.py
+    * Tidy up Legacy and JsonTopology classes
+    * Add support for converting VirtualBox nodes
 
 0.2.0   Daniel Lintott  <daniel@serverb.co.uk>
 

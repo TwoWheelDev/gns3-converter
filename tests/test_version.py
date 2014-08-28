@@ -4,7 +4,7 @@ import gns3converter
 
 class TestVersion(unittest.TestCase):
     def test_version(self):
-        self.assertEqual('0.3.0.dev1', gns3converter.__version__)
+        self.assertEqual('0.3.0.dev2', gns3converter.__version__)
 
 if __name__ == '__main__':
     unittest.main()
