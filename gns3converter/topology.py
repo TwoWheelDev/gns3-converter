@@ -169,6 +169,12 @@ class LegacyTopology():
         elif dev_type['type'] == 'VirtualBoxVM':
             self.topology['devices'][name]['vbox_id'] = self.vbox_id
             self.vbox_id += 1
+
+        if instance != 'GNS3-DATA' \
+            and 'hx' not in self.topology['devices'][name] \
+                and 'hy' not in self.topology['devices'][name]:
+            self.topology['devices'][name]['hx'] = dev_type['label_x']
+            self.topology['devices'][name]['hy'] = -25.0
         self.nid += 1
 
     @staticmethod
@@ -182,31 +188,39 @@ class LegacyTopology():
 
         dev_type = {'ROUTER': {'from': 'ROUTER',
                                'desc': 'Router',
-                               'type': 'Router'},
+                               'type': 'Router',
+                               'label_x': 19.5},
                     'QEMU': {'from': 'QEMU',
                              'desc': 'QEMU',
-                             'type': 'QEMU'},
+                             'type': 'QEMU',
+                             'label_x': 15},
                     'VBOX': {'from': 'VBOX',
                              'desc': 'VirtualBox VM',
-                             'type': 'VirtualBoxVM'},
+                             'type': 'VirtualBoxVM',
+                             'label_x': -4.5},
                     'FRSW': {'from': 'FRSW',
                              'desc': 'Frame Relay switch',
-                             'type': 'FrameRelaySwitch'},
+                             'type': 'FrameRelaySwitch',
+                             'label_x': 7.5},
                     'ETHSW': {'from': 'ETHSW',
                               'desc': 'Ethernet switch',
-                              'type': 'EthernetSwitch'},
+                              'type': 'EthernetSwitch',
+                              'label_x': 15.5},
                     'Hub': {'from': 'Hub',
                             'desc': 'Ethernet hub',
-                            'type': 'EthernetHub'},
+                            'type': 'EthernetHub',
+                            'label_x': 12.0},
                     'ATMSW': {'from': 'ATMSW',
                               'desc': 'ATM switch',
-                              'type': 'ATMSwitch'},
+                              'type': 'ATMSwitch',
+                              'label_x': 2.0},
                     'ATMBR': {'from': 'ATMBR',  # TODO: Investigate ATM Bridge
                               'desc': 'ATMBR',
                               'type': 'ATMBR'},
                     'Cloud': {'from': 'Cloud',
                               'desc': 'Cloud',
-                              'type': 'Cloud'}}
+                              'type': 'Cloud',
+                              'label_x': 47.5}}
 
         item_type = item.split(' ')[0]
         name = item.replace('%s ' % dev_type[item_type]['from'], '')

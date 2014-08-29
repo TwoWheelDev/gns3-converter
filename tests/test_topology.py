@@ -80,7 +80,8 @@ class TestTopology(unittest.TestCase):
                           'cnfg': 'configs/R1.cfg',
                           'console': 2101,
                           'aux': 2501,
-                          'model': 'c3725'}}
+                          'model': 'c3725',
+                          'hx': 19.5, 'hy': -25}}
 
         self.app.add_physical_item(instance, item)
         self.assertDictEqual(self.app.topology['devices'], exp_res)
@@ -98,7 +99,8 @@ class TestTopology(unittest.TestCase):
                           'cnfg': 'configs/R1.cfg',
                           'console': 2101,
                           'aux': 2501,
-                          'model': 'c7200'}}
+                          'model': 'c7200',
+                          'hx': 19.5, 'hy': -25}}
 
         self.app.old_top['127.0.0.1:7200']['ROUTER R1']['model'] = '7200'
 
