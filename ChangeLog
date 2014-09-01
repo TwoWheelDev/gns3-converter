@@ -1,4 +1,4 @@
-0.3.0.dev2  Daniel Lintott  <daniel@serverb.co.uk>
+0.3.0  Daniel Lintott  <daniel@serverb.co.uk>
 
     * Implement snapshot support based upon legacy snapshot system.
       This will not currently work until we can confirm how snapshots will work
@@ -6,6 +6,7 @@
     * Change how we retrieve the version number for use in setup.py
     * Tidy up Legacy and JsonTopology classes
     * Add support for converting VirtualBox nodes
+    * Ensure node labels are placed in the correct place
 
 0.2.0   Daniel Lintott  <daniel@serverb.co.uk>
 
