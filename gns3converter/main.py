@@ -245,7 +245,7 @@ def save(args, converter, json_topology, snapshot):
 
         # Create the vbox working directories if applicable
         vbox_max = json_topology.get_vboxes()
-        if vbox_max > 0:
+        if vbox_max is not None:
             for i in range(1, vbox_max + 1):
                 vbox_dir = os.path.join(output_dir, topology_name + '-files',
                                         'vbox', 'vm-%s' % i)

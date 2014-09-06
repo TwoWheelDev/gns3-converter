@@ -417,7 +417,11 @@ class JSONTopology():
         :rtype: int
         """
         vbox_list = []
+        vbox_max = None
         for node in self.nodes:
             if node['type'] == 'VirtualBoxVM':
                 vbox_list.append(node['vbox_id'])
-        return max(vbox_list)
+
+        if len(vbox_list) > 0:
+            vbox_max = max(vbox_list)
+        return vbox_max
