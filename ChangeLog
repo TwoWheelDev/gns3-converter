@@ -1,3 +1,7 @@
+0.3.1   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Fix error when there are no VirtualBox nodes (Fixes #8)
+
 0.3.0  Daniel Lintott  <daniel@serverb.co.uk>
 
     * Implement snapshot support based upon legacy snapshot system.
