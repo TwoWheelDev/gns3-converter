@@ -78,10 +78,10 @@ class Converter(object):
                                    encoding='utf-8')
             except SyntaxError:
                 logging.error('Error loading .net file')
-                exit()
+                sys.exit(1)
         except IOError:
             logging.error('Cannot open topology file')
-            exit()
+            sys.exit(1)
 
         vtor = Validator()
         res = config.validate(vtor, preserve_errors=True)

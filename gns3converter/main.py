@@ -46,6 +46,9 @@ def main():
     logging.getLogger(__name__)
 
     # Add the main topology to the list of files to convert
+    if args.topology == 'topology.net':
+        args.topology = os.path.join(os.getcwd(), 'topology.net')
+
     topology_files = [{'file': topology_abspath(args.topology),
                        'snapshot': False}]
 
