@@ -361,12 +361,12 @@ class Converter(object):
             for node in nodes:
                 if node['type'] == 'Cloud':
                     for port in node['ports']:
-                        if destination_port.lower() == port['name']:
+                        if destination_port.lower() == port['name'].lower():
                             device_id = node['id']
                             device_name = node['properties']['name']
                             port_id = port['id']
                             break
-                    break
+
         info = {'id': device_id,
                 'name': device_name,
                 'pid': port_id}
