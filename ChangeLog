@@ -1,3 +1,8 @@
+0.3.3   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Fix issue with cloud connections not connecting when more than one cloud
+      is used in a topology (Fixes #10)
+
 0.3.2   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Fix incorrect topology path when running on Windows (Fixes #9)
