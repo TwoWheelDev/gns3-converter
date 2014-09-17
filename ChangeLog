@@ -1,4 +1,4 @@
-0.3.3   Daniel Lintott  <daniel@serverb.co.uk>
+0.3.4   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Force NIO connections to be lowercase (Fixes #10 again)
 
