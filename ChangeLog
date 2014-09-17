@@ -1,5 +1,9 @@
 0.3.3   Daniel Lintott  <daniel@serverb.co.uk>
 
+    * Force NIO connections to be lowercase (Fixes #10 again)
+
+0.3.3   Daniel Lintott  <daniel@serverb.co.uk>
+
     * Fix issue with cloud connections not connecting when more than one cloud
       is used in a topology (Fixes #10)
 
