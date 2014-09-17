@@ -303,6 +303,9 @@ class Node(Interfaces):
         :param str src_port_name: Source port name
         :param dict destination: Destination
         """
+        if destination['device'] == 'NIO':
+            destination['port'] = destination['port'].lower()
+
         link = {'source_node_id': src_id,
                 'source_port_id': src_port,
                 'source_port_name': src_port_name,
@@ -389,7 +392,7 @@ class Node(Interfaces):
             if connection_len == 4:
                 nio = '%s:%s' % (connection[2], connection[3])
             elif connection_len == 6:
-                nio = '%s:%s:%s:%s' % (connection[2], connection[3],
+                nio = '%s:%s:%s:%s' % (connection[2].lower(), connection[3],
                                        connection[4], connection[5])
             else:
                 return RuntimeError('Error: Unknown connection string length '
