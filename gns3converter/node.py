@@ -216,6 +216,8 @@ class Node(Interfaces):
         """
         if symbol == 'EtherSwitch router':
             symbol = 'multilayer_switch'
+        elif symbol == 'Host':
+            symbol = 'computer'
 
         normal = ':/symbols/%s.normal.svg' % symbol
         selected = ':/symbols/%s.selected.svg' % symbol

@@ -265,6 +265,14 @@ class TestNode(unittest.TestCase):
         self.assertEqual(self.app.node['hover_symbol'],
                          ':/symbols/multilayer_switch.selected.svg')
 
+    def test_set_symbol_host(self):
+        self.app.set_symbol('Host')
+
+        self.assertEqual(self.app.node['default_symbol'],
+                         ':/symbols/computer.normal.svg')
+        self.assertEqual(self.app.node['hover_symbol'],
+                         ':/symbols/computer.selected.svg')
+
     def test_calc_device_links(self):
         self.app.interfaces.append({'to': 'R2 f0/0',
                                     'from': 'f0/0'})
