@@ -15,7 +15,7 @@
 """
 This module is for processing a topology
 """
-from gns3converter.models import MODEL_TRANSFORM
+from gns3converter.models import MODEL_TRANSFORM, EXTRA_CONF
 
 
 class LegacyTopology():
@@ -35,7 +35,8 @@ class LegacyTopology():
         self.old_top = old_top
         self._id = {'hv_id': 0,
                     'nid': 1,
-                    'vbox_id': 1}
+                    'vbox_id': 1,
+                    'qemu_id': 1}
 
     @property
     def hv_id(self):
@@ -92,6 +93,24 @@ class LegacyTopology():
         """
         self._id['vbox_id'] = value
 
+    @property
+    def qemu_id(self):
+        """
+        Return the Qemu VM ID
+        :return: Qemu VM ID
+        :rtype: int
+        """
+        return self._id['qemu_id']
+
+    @qemu_id.setter
+    def qemu_id(self, value):
+        """
+        Set the Qemu VM ID
+
+        :param int value: Qemu VM ID
+        """
+        self._id['qemu_id'] = value
+
     def add_artwork_item(self, instance, item):
         """
         Add an artwork item e.g. Shapes, Notes and Pixmaps
@@ -120,6 +139,18 @@ class LegacyTopology():
                     self.topology['artwork'][item_type][item_id][s_item] = \
                         s_detail
 
+    def add_qemu_path(self, instance):
+        """
+        Add the qemu path to the hypervisor conf data
+
+        :param instance: Hypervisor instance
+        """
+        tmp_conf = {'qemu_path': self.old_top[instance]['qemupath']}
+        if len(self.topology['conf']) == 0:
+            self.topology['conf'].append(tmp_conf)
+        else:
+            self.topology['conf'][self.hv_id].update(tmp_conf)
+
     def add_conf_item(self, instance, item):
         """
         Add a hypervisor configuration item
@@ -129,14 +160,21 @@ class LegacyTopology():
         """
         tmp_conf = {}
 
-        if item != 'VBoxDevice':
+        if item not in EXTRA_CONF:
             tmp_conf['model'] = MODEL_TRANSFORM[item]
 
         for s_item in sorted(self.old_top[instance][item]):
             if self.old_top[instance][item][s_item] is not None:
                 tmp_conf[s_item] = self.old_top[instance][item][s_item]
 
-        self.topology['conf'].append(tmp_conf)
+        if item in EXTRA_CONF:
+            tmp_conf = {item: tmp_conf}
+            if len(self.topology['conf']) == 0:
+                self.topology['conf'].append(tmp_conf)
+            else:
+                self.topology['conf'][self.hv_id].update(tmp_conf)
+        else:
+            self.topology['conf'].append(tmp_conf)
         self.hv_id = len(self.topology['conf']) - 1
 
     def add_physical_item(self, instance, item):
@@ -150,8 +188,12 @@ class LegacyTopology():
         self.topology['devices'][name] = {}
         self.topology['devices'][name]['hv_id'] = self.hv_id
         self.topology['devices'][name]['node_id'] = self.nid
+        self.topology['devices'][name]['from'] = dev_type['from']
         self.topology['devices'][name]['type'] = dev_type['type']
         self.topology['devices'][name]['desc'] = dev_type['desc']
+
+        if 'ext_conf' in dev_type:
+            self.topology['devices'][name]['ext_conf'] = dev_type['ext_conf']
 
         for s_item in sorted(self.old_top[instance][item]):
             if self.old_top[instance][item][s_item] is not None:
@@ -169,6 +211,9 @@ class LegacyTopology():
         elif dev_type['type'] == 'VirtualBoxVM':
             self.topology['devices'][name]['vbox_id'] = self.vbox_id
             self.vbox_id += 1
+        elif dev_type['type'] == 'QemuVM':
+            self.topology['devices'][name]['qemu_id'] = self.qemu_id
+            self.qemu_id += 1
 
         if instance != 'GNS3-DATA' \
             and 'hx' not in self.topology['devices'][name] \
@@ -191,12 +236,34 @@ class LegacyTopology():
                                'type': 'Router',
                                'label_x': 19.5},
                     'QEMU': {'from': 'QEMU',
-                             'desc': 'QEMU',
-                             'type': 'QEMU',
-                             'label_x': 15},
+                             'desc': 'QEMU VM',
+                             'type': 'QemuVM',
+                             'ext_conf': 'QemuDevice',
+                             'label_x': -12},
+                    'ASA': {'from': 'ASA',
+                            'desc': 'QEMU VM',
+                            'type': 'QemuVM',
+                            'ext_conf': '5520',
+                            'label_x': 2.5},
+                    'PIX': {'from': 'PIX',
+                            'desc': 'QEMU VM',
+                            'type': 'QemuVM',
+                            'ext_conf': '525',
+                            'label_x': -12},
+                    'JUNOS': {'from': 'JUNOS',
+                              'desc': 'QEMU VM',
+                              'type': 'QemuVM',
+                              'ext_conf': 'O-series',
+                              'label_x': -12},
+                    'IDS': {'from': 'IDS',
+                            'desc': 'QEMU VM',
+                            'type': 'QemuVM',
+                            'ext_conf': 'IDS-4215',
+                            'label_x': -12},
                     'VBOX': {'from': 'VBOX',
                              'desc': 'VirtualBox VM',
                              'type': 'VirtualBoxVM',
+                             'ext_conf': 'VBoxDevice',
                              'label_x': -4.5},
                     'FRSW': {'from': 'FRSW',
                              'desc': 'Frame Relay switch',
@@ -425,3 +492,20 @@ class JSONTopology():
         if len(vbox_list) > 0:
             vbox_max = max(vbox_list)
         return vbox_max
+
+    def get_qemus(self):
+        """
+        Get the maximum ID of the Qemu VMs
+
+        :return: Maximum Qemu VM ID
+        :rtype: int
+        """
+        qemu_vm_list = []
+        qemu_vm_max = None
+        for node in self.nodes:
+            if node['type'] == 'QemuVM':
+                qemu_vm_list.append(node['qemu_id'])
+
+        if len(qemu_vm_list) > 0:
+            qemu_vm_max = max(qemu_vm_list)
+        return qemu_vm_max

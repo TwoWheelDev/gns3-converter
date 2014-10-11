@@ -22,7 +22,7 @@ import os.path
 import logging
 from pkg_resources import resource_stream
 from gns3converter.adapters import PORT_TYPES
-from gns3converter.models import MODEL_TRANSFORM
+from gns3converter.models import MODEL_TRANSFORM, EXTRA_CONF
 from gns3converter.node import Node
 from gns3converter.interfaces import INTERFACE_RE, VBQ_INT_RE
 from gns3converter.topology import LegacyTopology
@@ -119,11 +119,19 @@ class Converter(object):
         topo = LegacyTopology(sections, old_top)
 
         for instance in sorted(sections):
+            if instance.startswith('vbox') or instance.startswith('qemu'):
 
-            if instance.startswith('vbox') \
-                    and isinstance(old_top[instance]['VBoxDevice'], dict):
-                topo.add_conf_item(instance, 'VBoxDevice')
-                old_top[instance].pop('VBoxDevice')
+                if instance.startswith('qemu') and \
+                        'qemupath' in old_top[instance]:
+                    topo.add_qemu_path(instance)
+
+                for device in EXTRA_CONF:
+                    try:
+                        if isinstance(old_top[instance][device], dict):
+                            topo.add_conf_item(instance, device)
+                            old_top[instance].pop(device)
+                    except KeyError:
+                        pass
 
             for item in sorted(old_top[instance]):
                 if isinstance(old_top[instance][item], dict):
@@ -178,8 +186,12 @@ class Converter(object):
             tmp_node.node['id'] = devices[device]['node_id']
             tmp_node.node['x'] = devices[device]['x']
             tmp_node.node['y'] = devices[device]['y']
+            tmp_node.device_info['from'] = devices[device]['from']
             tmp_node.device_info['type'] = devices[device]['type']
             tmp_node.device_info['desc'] = devices[device]['desc']
+
+            if 'ext_conf' in devices[device]:
+                tmp_node.device_info['ext_conf'] = devices[device]['ext_conf']
 
             # Node Label
             tmp_node.node['label']['text'] = device
@@ -231,7 +243,13 @@ class Converter(object):
 
             elif tmp_node.device_info['type'] == 'VirtualBoxVM':
                 tmp_node.add_to_virtualbox()
-                tmp_node.add_virtualbox_ports()
+                tmp_node.add_vm_ethernet_ports()
+                tmp_node.calc_device_links()
+
+            elif tmp_node.device_info['type'] == 'QemuVM':
+                tmp_node.add_to_qemu()
+                tmp_node.set_qemu_symbol()
+                tmp_node.add_vm_ethernet_ports()
                 tmp_node.calc_device_links()
 
             # Get the data we need back from the node instance

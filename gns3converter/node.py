@@ -16,9 +16,10 @@
 This module is used for building Nodes
 """
 import os
+import re
 from gns3converter.adapters import ADAPTER_MATRIX, PORT_TYPES
 from gns3converter.models import MODEL_MATRIX
-from gns3converter.interfaces import INTERFACE_RE, NUMBER_RE, MAPINT_RE,\
+from gns3converter.interfaces import INTERFACE_RE, NUMBER_RE, MAPINT_RE, \
     VBQ_INT_RE, Interfaces
 from gns3converter.utils import fix_path
 
@@ -30,6 +31,7 @@ class Node(Interfaces):
     :param hypervisor: Hypervisor
     :param int port_id: starting port ID for this node
     """
+
     def __init__(self, hypervisor, port_id):
         super().__init__(port_id)
         self.node = {'ports': [],
@@ -41,7 +43,8 @@ class Node(Interfaces):
                             'npe': None}
         self.hypervisor = hypervisor
         self.config = []
-        self.base_ports = {'vbox_console': 3501}
+        self.base_ports = {'vbox_console': 3501,
+                           'qemu_console': 5001}
 
     def add_wic(self, old_wic, wic):
         """
@@ -178,8 +181,8 @@ class Node(Interfaces):
             self.node['properties']['adapters'] = device[item]
         elif item == 'image':
             self.node['properties']['vmname'] = device[item]
-        elif item == 'vbox_id':
-            self.node['vbox_id'] = device[item]
+        elif item == 'vbox_id' or item == 'qemu_id':
+            self.node[item] = device[item]
 
     def add_to_virtualbox(self):
         """
@@ -188,18 +191,74 @@ class Node(Interfaces):
         """
         # VirtualBox Image
         if 'vmname' not in self.node['properties']:
-            self.node['properties']['vmname'] = self.hypervisor['image']
+            self.node['properties']['vmname'] = \
+                self.hypervisor['VBoxDevice']['image']
         # Number of adapters
         if 'adapters' not in self.node['properties']:
-            self.node['properties']['adapters'] = self.hypervisor['nics']
+            self.node['properties']['adapters'] = \
+                self.hypervisor['VBoxDevice']['nics']
         # Console Port
         if 'console' not in self.node['properties']:
             self.node['properties']['console'] = \
                 self.base_ports['vbox_console'] + self.node['vbox_id'] - 1
 
-    def add_virtualbox_ports(self):
+    def add_to_qemu(self):
         """
-        Add ethernet ports to the virtualbox node
+        Add additional parameters to a QemuVM Device that were present in its
+        global conf section
+        """
+        device = self.device_info['ext_conf']
+        node_prop = self.node['properties']
+        hv_device = self.hypervisor[device]
+        # QEMU HDD Images
+        if 'hda_disk_image' not in node_prop:
+            if 'image' in hv_device:
+                node_prop['hda_disk_image'] = hv_device['image']
+            elif 'image1' in hv_device:
+                node_prop['hda_disk_image'] = hv_device['image1']
+        if 'hdb_disk_image' not in node_prop and 'image2' in hv_device:
+            node_prop['hdb_disk_image'] = hv_device['image2']
+        # RAM
+        if 'ram' not in node_prop:
+            node_prop['ram'] = hv_device['ram']
+        # QEMU Options
+        if 'options' not in node_prop and 'options' in hv_device:
+            node_prop['options'] = hv_device['options']
+        # Kernel Image
+        if 'kernel_image' not in node_prop and 'kernel' in hv_device:
+            node_prop['kernel_image'] = hv_device['kernel']
+        # Kernel Command Line
+        if 'kernel_command_line' not in node_prop and \
+                'kernel_cmdline' in hv_device:
+            node_prop['kernel_command_line'] = hv_device['kernel_cmdline']
+        # initrd
+        if 'initrd' not in node_prop and 'initrd' in hv_device:
+            node_prop['initrd'] = hv_device['initrd']
+        # Number of adapters
+        if 'adapters' not in node_prop and 'nics' in hv_device:
+            node_prop['adapters'] = hv_device['nics']
+        elif 'adapters' not in node_prop and 'nics' not in hv_device:
+            node_prop['adapters'] = 6
+        # Adapter type
+        if 'adapter_type' not in node_prop and 'netcard' in hv_device:
+            node_prop['adapter_type'] = hv_device['netcard']
+        # Console Port
+        if 'console' not in node_prop:
+            node_prop['console'] = self.base_ports['qemu_console'] + \
+                self.node['qemu_id'] - 1
+        # Qemu Path
+        if 'qemu_path' not in node_prop:
+            qemu_path = self.hypervisor['qemu_path']
+            # Modify QEMU Path if flavor is specified
+            if 'flavor' in hv_device:
+                qemu_path = re.sub(r'qemu-system-.*',
+                                   'qemu-system' + hv_device['flavor'],
+                                   qemu_path)
+            node_prop['qemu_path'] = qemu_path
+
+    def add_vm_ethernet_ports(self):
+        """
+        Add ethernet ports to Virtualbox and Qemu nodes
         """
         for i in range(self.node['properties']['adapters']):
             port = {'id': self.port_id,
@@ -207,6 +266,17 @@ class Node(Interfaces):
                     'port_number': i}
             self.node['ports'].append(port)
             self.port_id += 1
+
+    def set_qemu_symbol(self):
+        """
+        Set the appropriate symbol for QEMU Devices
+        """
+        valid_devices = {'ASA': 'asa', 'PIX': 'PIX_firewall',
+                         'JUNOS': 'router', 'IDS': 'ids'}
+        if self.device_info['from'] in valid_devices \
+                and 'default_symbol' not in self.node \
+                and 'hover_symbol' not in self.node:
+            self.set_symbol(valid_devices[self.device_info['from']])
 
     def set_symbol(self, symbol):
         """

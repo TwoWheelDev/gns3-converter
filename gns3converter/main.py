@@ -254,6 +254,14 @@ def save(args, converter, json_topology, snapshot):
                                         'vbox', 'vm-%s' % i)
                 os.makedirs(vbox_dir)
 
+        # Create the vbox working directories if applicable
+        qemu_max = json_topology.get_qemus()
+        if qemu_max is not None:
+            for i in range(1, qemu_max + 1):
+                qemu_dir = os.path.join(output_dir, topology_name + '-files',
+                                        'qemu', 'vm-%s' % i)
+                os.makedirs(qemu_dir)
+
         if config_err:
             logging.warning('Some router startup configurations could not be '
                             'found to be copied to the new topology')

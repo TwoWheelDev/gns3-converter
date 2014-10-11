@@ -68,3 +68,6 @@ for chassis in ('2620', '2621', '2610XM', '2611XM', '2620XM',
     MODEL_TRANSFORM[chassis] = 'c2600'
 for chassis in ('3620', '3640', '3660'):
     MODEL_TRANSFORM[chassis] = 'c3600'
+
+EXTRA_CONF = ('VBoxDevice', 'QemuDevice', '5520', '525', 'O-series',
+              'IDS-4215')
