@@ -1,3 +1,8 @@
+0.4.0   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Implement support for converting QEMU Based Devices (Qemu VM, ASA, PIX,
+      JUNOS, IDS)
+
 0.3.5   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Convert Host symbol to computer symbol (Fixes #11)
