@@ -456,7 +456,10 @@ class Node(Interfaces):
         # 0: Destination device 1: Destination port
         # 2: NIO 3: NIO Destination
         self.node['properties']['nios'] = []
-        self.connections = self.connections.split(' ')
+        if self.connections is None:
+            return None
+        else:
+            self.connections = self.connections.split(' ')
 
         for connection in sorted(self.connections):
             connection = connection.split(':')

@@ -121,6 +121,11 @@ class TestNode(unittest.TestCase):
         self.assertDictEqual(self.app.node['ports'][0], exp_result)
         self.assertEqual(self.app.port_id, 2)
 
+    def test_calc_cloud_connection_none(self):
+        self.app.connections = None
+        ret = self.app.calc_cloud_connection()
+        self.assertIsNone(ret)
+
     def test_calc_ethsw_port_device(self):
         self.app.node['id'] = 1
         self.app.node['properties']['name'] = 'SW1'
