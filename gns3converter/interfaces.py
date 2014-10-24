@@ -42,3 +42,9 @@ class Interfaces(object):
         self.port_id = port_id
         self.connections = None
         self.mappings = []
+        self.port_numbering = {'G': 0,  # GigabitEthernet
+                               'F': 0,  # FastEthernet
+                               'E': 0,  # Ethernet
+                               'S': 0,  # Serial
+                               'A': 0,  # ATM
+                               'P': 0}  # POS
