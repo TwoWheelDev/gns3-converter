@@ -66,7 +66,6 @@ class Converter(object):
         :rtype: ConfigObj
         """
         configspec = resource_stream(__name__, 'configspec')
-        config = None
         try:
             handle = open(self._topology)
             handle.close()
