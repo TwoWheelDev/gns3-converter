@@ -17,6 +17,7 @@ import os
 import shutil
 import argparse
 import logging
+import re
 from gns3converter import __version__
 from gns3converter.converter import Converter
 from gns3converter.topology import JSONTopology
@@ -174,6 +175,22 @@ def name(args):
     return topo_name
 
 
+def snapshot_name(topo_name):
+    """
+    Get the snapshot name
+
+    :param str topo_name: topology name
+    :return:
+    """
+    topo_name = os.path.basename(topology_dirname(topo_name))
+    snap_re = re.compile('^topology_(.+)(_snapshot_)(\d{6}_\d{6})$')
+    result = snap_re.search(topo_name)
+
+    snap_name = result.group(1) + '_' + result.group(3)
+
+    return snap_name
+
+
 def save(args, converter, json_topology, snapshot):
     """
     Save the converted topology
@@ -195,19 +212,12 @@ def save(args, converter, json_topology, snapshot):
             output_dir = os.getcwd()
 
         topology_name = json_topology.name
+        topology_files_dir = os.path.join(output_dir, topology_name + '-files')
 
         if snapshot:
-            snapshot_name = os.path.basename(
-                topology_dirname(converter.topology))
-            output_dir = os.path.join(output_dir, 'snapshots', snapshot_name)
-            topology_files_dir = os.path.join(output_dir, snapshot_name +
-                                              '-files')
-            # TODO: Remove this warning once snapshots are implemented
-            logging.warning('GNS3 v1.0 does not currently support snapshots.'
-                            ' The snapshots for this project will not be '
-                            'saved')
-            return
-        else:
+            snap_name = snapshot_name(converter.topology)
+            output_dir = os.path.join(topology_files_dir, 'snapshots',
+                                      snap_name)
             topology_files_dir = os.path.join(output_dir, topology_name +
                                               '-files')
 
