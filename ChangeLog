@@ -1,3 +1,10 @@
+0.5.0   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Correctly handle a cloud being in a topology but not connected
+    * Correct WIC card numbering for routers. If multiple WICs were installed
+      it would create duplicate port names.
+    * Update the snapshot system based upon GNS3v1 snapshot system
+
 0.4.0   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Implement support for converting QEMU Based Devices (Qemu VM, ASA, PIX,
