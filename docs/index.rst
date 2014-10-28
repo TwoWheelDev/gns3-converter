@@ -9,8 +9,8 @@ format. It will also convert all QEMU based devices (QEMU VM, ASA, PIX, JUNOS &
 IDS). VPCS nodes will be converted to cloud devices due to lack of information
 the 0.8.7 topology files.
 
-For topologies containing snapshots, the snapshots will not currently be saved
-until snapshots have been implemented in GNS3 v1
+For topologies containing snapshots, the snapshots will also be converted to
+the new format automatically.
 
 Contents:
 
