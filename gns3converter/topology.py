@@ -302,7 +302,8 @@ class JSONTopology():
         self._nodes = []
         self._links = []
         self._notes = []
-        self._shapes = {}
+        self._shapes = {'ellipse': None,
+                        'rectangle': None}
         self._images = []
         self._servers = [{'host': '127.0.0.1', 'id': 1, 'local': True,
                           'port': 8000}]
