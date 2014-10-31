@@ -56,9 +56,11 @@ def main():
     # Add any snapshot topologies to be converted
     topology_files.extend(get_snapshots(args.topology))
 
+    topology_name = name(args.topology, args.name)
+
     # Do the conversion
     for topology in topology_files:
-        do_conversion(topology, args)
+        do_conversion(topology, topology_name, args.output, args.debug)
 
 
 def setup_argparse():
@@ -86,14 +88,20 @@ def setup_argparse():
     return parser
 
 
-def do_conversion(topology_def, args):
+def do_conversion(topology_def, topology_name, output_dir=None, debug=False):
     """
     Convert the topology
 
-    :param dict topology_def: Dict containing topology file and snapshot bool
+    :param dict topology_def: Dict containing topology file and snapshot bool.
+                              For example:
+                              ``{'file': filename, 'snapshot': False}``
+    :param str topology_name: The name of the topology
+    :param str output_dir: The directory in which to output the topology.
+                           (Default: None)
+    :param bool debug: Enable debugging (Default: False)
     """
     # Create a new instance of the the Converter
-    gns3_conv = Converter(topology_def['file'], args.debug)
+    gns3_conv = Converter(topology_def['file'], debug)
     # Read the old topology
     old_top = gns3_conv.read_topology()
     new_top = JSONTopology()
@@ -111,10 +119,10 @@ def do_conversion(topology_def, args):
     new_top.images = gns3_conv.generate_images(topology['artwork']['PIXMAP'])
 
     # Enter topology name
-    new_top.name = name(args)
+    new_top.name = topology_name
 
     # Save the new topology
-    save(args, gns3_conv, new_top, topology_def['snapshot'])
+    save(output_dir, gns3_conv, new_top, topology_def['snapshot'])
 
 
 def topology_abspath(topology):
@@ -159,19 +167,23 @@ def get_snapshots(topology):
     return snapshots
 
 
-def name(args):
+def name(topology_file, topology_name=None):
     """
-    Calculate the name to save the converted topology as
+    Calculate the name to save the converted topology as using either either
+    a specified name or the directory name of the current project
 
+    :param str topology_file: Topology filename
+    :param topology_name: Optional topology name (Default: None)
+    :type topology_name: str or None
     :return: new topology name
     :rtype: str
     """
-    if args.name is not None:
+    if topology_name is not None:
         logging.debug('topology name supplied')
-        topo_name = args.name
+        topo_name = topology_name
     else:
         logging.debug('topology name not supplied')
-        topo_name = os.path.basename(topology_dirname(args.topology))
+        topo_name = os.path.basename(topology_dirname(topology_file))
     return topo_name
 
 
