@@ -314,5 +314,77 @@ class TestNode(unittest.TestCase):
         self.app.calc_device_links()
         self.assertDictEqual(self.app.links[0], exp_res)
 
+    def test_add_mapping(self):
+        self.app.add_mapping(('1:122', '2:221'))
+        self.assertListEqual(self.app.mappings, [{'source': '1:122',
+                                                  'dest': '2:221'}])
+
+    def test_process_mappings(self):
+        self.app.add_mapping(('1:122', '2:221'))
+        self.app.add_mapping(('2:221', '1:122'))
+        self.app.add_mapping(('3:321', '1:123'))
+
+        self.app.process_mappings()
+
+        exp_res = {'1:122': '2:221', '3:321': '1:123'}
+        self.assertDictEqual(self.app.node['properties']['mappings'],
+                             exp_res)
+
+    def test_calc_frsw_port(self):
+        self.app.node['id'] = 1
+        self.app.node['properties']['name'] = 'FRSW1'
+        exp_link = [{'source_port_id': 1,
+                     'source_node_id': 1,
+                     'source_port_name': '1',
+                     'dest_dev': 'R1',
+                     'source_dev': 'FRSW1',
+                     'dest_port': 's0/0'}]
+        self.app.calc_frsw_port('1', 'R1 s0/0')
+        self.assertListEqual(self.app.node['ports'],
+                             [{'id': 1, 'name': '1', 'port_number': 1}])
+        self.assertListEqual(self.app.links, exp_link)
+        self.assertEqual(self.app.port_id, 2)
+
+    def test_set_qemu_symbol(self):
+        self.app.device_info['from'] = 'ASA'
+        self.app.set_qemu_symbol()
+
+        self.assertEqual(self.app.node['default_symbol'],
+                         ':/symbols/asa.normal.svg')
+        self.assertEqual(self.app.node['hover_symbol'],
+                         ':/symbols/asa.selected.svg')
+
+    def test_add_vm_ethernet_ports(self):
+        exp_res = [{'id': 1, 'name': 'Ethernet0', 'port_number': 0},
+                   {'id': 2, 'name': 'Ethernet1', 'port_number': 1}]
+        self.app.node['properties']['adapters'] = 2
+        self.app.add_vm_ethernet_ports()
+
+        self.assertListEqual(self.app.node['ports'], exp_res)
+        self.assertEqual(self.app.port_id, 3)
+
+    @unittest.skip
+    def test_add_to_qemu(self):
+        # TODO
+        self.fail()
+
+    def test_add_to_virtualbox(self):
+        self.app.node['vbox_id'] = 1
+        self.app.hypervisor['VBoxDevice'] = {}
+        self.app.hypervisor['VBoxDevice']['image'] = 'image_name'
+        self.app.hypervisor['VBoxDevice']['nics'] = 2
+
+        self.app.add_to_virtualbox()
+
+        self.assertEqual(self.app.node['properties']['vmname'], 'image_name')
+        self.assertEqual(self.app.node['properties']['adapters'], 2)
+        self.assertEqual(self.app.node['properties']['console'], 3501)
+
+    @unittest.skip
+    def test_add_device_items(self):
+        # TODO
+        self.fail()
+
+
 if __name__ == '__main__':
     unittest.main()
