@@ -27,6 +27,13 @@ class TestConverter(unittest.TestCase):
             self._topology = os.path.abspath('./topology.net')
         self.app = Converter(self._topology)
 
+    def test_get_topology(self):
+        topo_file = self.app.topology
+        exp_res = (os.path.abspath('./tests/topology.net'),
+                   os.path.abspath('./topology.net'))
+
+        self.assertIn(topo_file, exp_res)
+
     def test_read_topology(self):
         self.maxDiff = None
         topology = self.app.read_topology()

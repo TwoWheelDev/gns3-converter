@@ -14,10 +14,10 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import unittest
 from configobj import ConfigObj
-from gns3converter.topology import LegacyTopology
+from gns3converter.topology import LegacyTopology, JSONTopology
 
 
-class TestTopology(unittest.TestCase):
+class TestLegacyTopology(unittest.TestCase):
     def setUp(self):
         conf = ConfigObj()
         conf['127.0.0.1:7200'] = {'3725': {'image': 'c3725.image',
@@ -36,18 +36,22 @@ class TestTopology(unittest.TestCase):
 
         self.app.add_conf_item(instance, item)
 
-    def add_artwork_item(self):
-        self.app.topology['conf']['GNS3-DATA'] = {
+    def test_add_artwork_item(self):
+        self.app.old_top['GNS3-DATA'] = {
             'NOTE 1': {'text': 'SomeText', 'x': 20, 'y': 25,
                        'color': '#1a1a1a'},
+            'NOTE 2': {'text': 'f0/0', 'x': 20, 'y': 25,
+                       'color': '#1a1a1a', 'interface': 'f0/0'},
             'SHAPE 1': {'type': 'ellipse', 'x': 20, 'y': 25, 'width': 500,
-                        'height': 250, 'border_style': 2}}
+                        'height': 250, 'border_style': 2}
+        }
 
         exp_res = {'SHAPE': {'1': {'type': 'ellipse',
                                    'x': 20, 'y': 25,
                                    'width': 500,
                                    'height': 250,
                                    'border_style': 2}},
+                   'PIXMAP': {},
                    'NOTE': {'1': {'text': 'SomeText',
                                   'x': 20, 'y': 25,
                                   'color': '#1a1a1a'}}
@@ -55,6 +59,7 @@ class TestTopology(unittest.TestCase):
 
         self.app.add_artwork_item('GNS3-DATA', 'SHAPE 1')
         self.app.add_artwork_item('GNS3-DATA', 'NOTE 1')
+        self.app.add_artwork_item('GNS3-DATA', 'NOTE 2')
 
         self.assertDictEqual(self.app.topology['artwork'], exp_res)
 
@@ -128,6 +133,67 @@ class TestTopology(unittest.TestCase):
                 (name, dev_type) = self.app.device_typename(device)
                 self.assertEqual(exp_result[device]['name'], name)
                 self.assertEqual(exp_result[device]['type'], dev_type['type'])
+
+    def test_vbox_id(self):
+        self.assertEqual(self.app.vbox_id, 1)
+        self.app.vbox_id = 5
+        self.assertEqual(self.app.vbox_id, 5)
+
+    def test_qemu_id(self):
+        self.assertEqual(self.app.qemu_id, 1)
+        self.app.qemu_id = 5
+        self.assertEqual(self.app.qemu_id, 5)
+
+
+class TestJSONTopology(unittest.TestCase):
+    def setUp(self):
+        self.app = JSONTopology()
+
+    def test_nodes(self):
+        self.assertListEqual(self.app.nodes, [])
+        self.app.nodes = [{'node_id': 1}]
+        self.assertListEqual(self.app.nodes, [{'node_id': 1}])
+
+    def test_links(self):
+        self.assertListEqual(self.app.links, [])
+
+    def test_notes(self):
+        self.assertListEqual(self.app.notes, [])
+
+    def test_shapes(self):
+        self.assertDictEqual(self.app.shapes,
+                             {'ellipse': None, 'rectangle': None})
+
+    def test_images(self):
+        self.assertListEqual(self.app.images, [])
+
+    def test_servers(self):
+        exp_res = [{'host': '127.0.0.1', 'id': 1, 'local': True, 'port': 8000}]
+        self.assertListEqual(self.app.servers, exp_res)
+
+    def test_name(self):
+        self.assertIsNone(self.app.name)
+        self.app.name = 'Super Topology'
+        self.assertEqual(self.app.name, 'Super Topology')
+
+    def test_get_topology(self):
+        exp_res = {'name': None,
+                   'resources_type': 'local',
+                   'topology': {'servers': [{'host': '127.0.0.1', 'id': 1,
+                                             'local': True, 'port': 8000}]},
+                   'type': 'topology',
+                   'version': '1.0'}
+
+        result = self.app.get_topology()
+        self.assertDictEqual(result, exp_res)
+
+    def test_get_vboxes(self):
+        # TODO
+        pass
+
+    def test_get_qemus(self):
+        # TODO
+        pass
 
 if __name__ == '__main__':
     unittest.main()
