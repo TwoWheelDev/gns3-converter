@@ -191,23 +191,20 @@ def snapshot_name(topo_name):
     return snap_name
 
 
-def save(args, converter, json_topology, snapshot):
+def save(output_dir, converter, json_topology, snapshot):
     """
     Save the converted topology
 
-    :param args: Program arguments
+    :param str output_dir: Output Directory
     :param Converter converter: Converter instance
     :param JSONTopology json_topology: JSON topology layout
-    :param bool snapshot: Snapshot Boolean
+    :param bool snapshot: Is this a snapshot?
     """
     try:
-        config_err = False
-        image_err = False
-
         old_topology_dir = topology_dirname(converter.topology)
 
-        if args.output:
-            output_dir = os.path.abspath(args.output)
+        if output_dir:
+            output_dir = os.path.abspath(output_dir)
         else:
             output_dir = os.getcwd()
 
@@ -226,51 +223,17 @@ def save(args, converter, json_topology, snapshot):
             os.makedirs(output_dir)
 
         # Move the dynamips config files to the new topology folder
-        if len(converter.configs) > 0:
-            dynamips_config_dir = os.path.join(topology_files_dir, 'dynamips',
-                                               'configs')
-            os.makedirs(dynamips_config_dir)
-            for config in converter.configs:
-                old_config_file = os.path.join(old_topology_dir, config['old'])
-                new_config_file = os.path.join(dynamips_config_dir,
-                                               os.path.basename(config['new']))
-                if os.path.isfile(old_config_file):
-                    # Copy and rename the config
-                    shutil.copy(old_config_file, new_config_file)
-                else:
-                    config_err = True
-                    logging.error('Unable to find %s' % config['old'])
+        config_err = copy_configs(converter.configs, old_topology_dir,
+                                  topology_files_dir)
 
-        # Move the image files to the new topology folder if applicable
-        if len(converter.images) > 0:
-            images_dir = os.path.join(output_dir, topology_name + '-files',
-                                      'images')
-            os.makedirs(images_dir)
-            for image in converter.images:
-                old_image_file = os.path.abspath(image)
-                new_image_file = os.path.join(images_dir,
-                                              os.path.basename(image))
-                if os.path.isfile(os.path.abspath(old_image_file)):
-                    shutil.copy(old_image_file, new_image_file)
-                else:
-                    image_err = True
-                    logging.error('Unable to find %s' % old_image_file)
+        # Move the image files to the new topology folder
+        image_err = copy_images(converter.images, topology_files_dir)
 
-        # Create the vbox working directories if applicable
-        vbox_max = json_topology.get_vboxes()
-        if vbox_max is not None:
-            for i in range(1, vbox_max + 1):
-                vbox_dir = os.path.join(output_dir, topology_name + '-files',
-                                        'vbox', 'vm-%s' % i)
-                os.makedirs(vbox_dir)
+        # Create the vbox working directories
+        make_vbox_dirs(json_topology.get_vboxes(), output_dir, topology_name)
 
-        # Create the vbox working directories if applicable
-        qemu_max = json_topology.get_qemus()
-        if qemu_max is not None:
-            for i in range(1, qemu_max + 1):
-                qemu_dir = os.path.join(output_dir, topology_name + '-files',
-                                        'qemu', 'vm-%s' % i)
-                os.makedirs(qemu_dir)
+        # Create the qemu working directories
+        make_qemu_dirs(json_topology.get_qemus(), output_dir, topology_name)
 
         if config_err:
             logging.warning('Some router startup configurations could not be '
@@ -290,6 +253,88 @@ def save(args, converter, json_topology, snapshot):
                       '     %s' % output_dir)
     except OSError as error:
         logging.error(error)
+
+
+def copy_configs(configs, source, target):
+    """
+    Copy dynamips configs to converted topology
+
+    :param configs: Configs to copy
+    :param str source: Source topology directory
+    :param str target: Target topology files directory
+    :return: True when a config cannot be found, otherwise false
+    :rtype: bool
+    """
+    config_err = False
+    if len(configs) > 0:
+        config_dir = os.path.join(target, 'dynamips', 'configs')
+        os.makedirs(config_dir)
+        for config in configs:
+            old_config_file = os.path.join(source, config['old'])
+            new_config_file = os.path.join(config_dir,
+                                           os.path.basename(config['new']))
+            if os.path.isfile(old_config_file):
+                # Copy and rename the config
+                shutil.copy(old_config_file, new_config_file)
+            else:
+                config_err = True
+                logging.error('Unable to find %s' % config['old'])
+    return config_err
+
+
+def copy_images(images, target):
+    """
+    Copy images to converted topology
+
+    :param images: Images to copy
+    :param target: Target topology files directory
+    :return: True when an image cannot be found, otherwise false
+    :rtype: bool
+    """
+    image_err = False
+    if len(images) > 0:
+        images_dir = os.path.join(target, 'images')
+        os.makedirs(images_dir)
+        for image in images:
+            old_image_file = os.path.abspath(image)
+            new_image_file = os.path.join(images_dir,
+                                          os.path.basename(image))
+            if os.path.isfile(os.path.abspath(old_image_file)):
+                shutil.copy(old_image_file, new_image_file)
+            else:
+                image_err = True
+                logging.error('Unable to find %s' % old_image_file)
+    return image_err
+
+
+def make_vbox_dirs(max_vbox_id, output_dir, topology_name):
+    """
+    Create VirtualBox working directories if required
+
+    :param int max_vbox_id: Number of directories to create
+    :param str output_dir: Output directory
+    :param str topology_name: Topology name
+    """
+    if max_vbox_id is not None:
+        for i in range(1, max_vbox_id + 1):
+            vbox_dir = os.path.join(output_dir, topology_name + '-files',
+                                    'vbox', 'vm-%s' % i)
+            os.makedirs(vbox_dir)
+
+
+def make_qemu_dirs(max_qemu_id, output_dir, topology_name):
+    """
+    Create Qemu VM working directories if required
+
+    :param int max_qemu_id: Number of directories to create
+    :param str output_dir: Output directory
+    :param str topology_name: Topology name
+    """
+    if max_qemu_id is not None:
+        for i in range(1, max_qemu_id + 1):
+            qemu_dir = os.path.join(output_dir, topology_name + '-files',
+                                    'qemu', 'vm-%s' % i)
+            os.makedirs(qemu_dir)
 
 
 if __name__ == '__main__':
