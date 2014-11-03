@@ -48,7 +48,7 @@ else:
         entry_points={'console_scripts':
                     ['gns3-converter = gns3converter.main:main']},
         platforms='any',
-        classifiers=['Development Status :: 4 - Beta',
+        classifiers=['Development Status :: 5 - Production/Stable',
                      'Environment :: Console',
                      'Intended Audience :: Education',
                      'Intended Audience :: Information Technology',

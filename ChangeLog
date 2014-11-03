@@ -1,3 +1,11 @@
+1.0.0   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Stable release version 1.0!
+    * Split out parts of the save function to improve readability
+    * Rework the passing of arguments to simplify integration into GNS3
+    * Define ellipse and rectangle in shapes dict during init
+    * Major improvements to the test-suite (still lots to be done)
+
 0.5.0   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Correctly handle a cloud being in a topology but not connected
