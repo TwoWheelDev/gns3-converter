@@ -156,19 +156,34 @@ class TestJSONTopology(unittest.TestCase):
 
     def test_links(self):
         self.assertListEqual(self.app.links, [])
+        self.app.links = [{'id': 1}]
+        self.assertListEqual(self.app.links, [{'id': 1}])
 
     def test_notes(self):
         self.assertListEqual(self.app.notes, [])
+        self.app.notes = [{'id': 1}]
+        self.assertListEqual(self.app.notes, [{'id': 1}])
 
     def test_shapes(self):
         self.assertDictEqual(self.app.shapes,
                              {'ellipse': None, 'rectangle': None})
+        self.app.shapes = {'ellipse': {'id': 1},
+                           'rectangle': {'id': 2}}
+        self.assertDictEqual(self.app.shapes, {'ellipse': {'id': 1},
+                                               'rectangle': {'id': 2}})
 
     def test_images(self):
         self.assertListEqual(self.app.images, [])
+        self.app.images = [{'id': 1}]
+        self.assertListEqual(self.app.images, [{'id': 1}])
 
     def test_servers(self):
         exp_res = [{'host': '127.0.0.1', 'id': 1, 'local': True, 'port': 8000}]
+        self.assertListEqual(self.app.servers, exp_res)
+        self.app.servers = [{'host': '127.0.0.1', 'id': 2, 'local': True,
+                            'port': 8001}]
+        exp_res = [{'host': '127.0.0.1', 'id': 2, 'local': True,
+                    'port': 8001}]
         self.assertListEqual(self.app.servers, exp_res)
 
     def test_name(self):
