@@ -1,3 +1,10 @@
+1.1.0   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Add new custom exception ConvertError
+    * Raise a ConvertError if we can't get a snapshot name
+    * Add quiet mode to prevent console output
+    * Include mscvr100.dll when compiling for Windows
+
 1.0.0   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Stable release version 1.0!
