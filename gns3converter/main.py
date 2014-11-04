@@ -20,6 +20,7 @@ import logging
 import re
 from gns3converter import __version__
 from gns3converter.converter import Converter
+from gns3converter.converterror import ConvertError
 from gns3converter.topology import JSONTopology
 
 LOG_MSG_FMT = '[%(levelname)1.1s %(asctime)s %(module)s:%(lineno)d] ' \
@@ -191,14 +192,20 @@ def snapshot_name(topo_name):
     """
     Get the snapshot name
 
-    :param str topo_name: topology name
-    :return:
+    :param str topo_name: topology file location. The name is taken from the
+                          directory containing the topology file using the
+                          following format: topology_NAME_snapshot_DATE_TIME
+    :return: snapshot name
+    :raises ConvertError: when unable to determine the snapshot name
     """
     topo_name = os.path.basename(topology_dirname(topo_name))
     snap_re = re.compile('^topology_(.+)(_snapshot_)(\d{6}_\d{6})$')
     result = snap_re.search(topo_name)
 
-    snap_name = result.group(1) + '_' + result.group(3)
+    if result is not None:
+        snap_name = result.group(1) + '_' + result.group(3)
+    else:
+        raise ConvertError('Unable to get snapshot name')
 
     return snap_name
 
