@@ -25,7 +25,8 @@ if sys.platform == 'win32':
         package_data={'gns3converter': ['configspec']},
         options={'build_exe': {'namespace_packages': 'gns3converter',
                                'packages': 'gns3converter',
-                               'zip_includes': zip_includes
+                               'zip_includes': zip_includes,
+                               'include_msvcr': True
                                }
                  },
         executables=[Executable("gns3-converter.py")]
