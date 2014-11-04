@@ -32,10 +32,11 @@ def main():
     """
     Entry point for gns3-converter
     """
-    print('GNS3 Topology Converter')
-
     arg_parse = setup_argparse()
     args = arg_parse.parse_args()
+
+    if not args.quiet:
+        print('GNS3 Topology Converter')
 
     if args.debug:
         logging_level = logging.DEBUG
@@ -86,10 +87,14 @@ def setup_argparse():
     parser.add_argument('--debug',
                         help='Enable debugging output',
                         action='store_true')
+    parser.add_argument('-q', '--quiet',
+                        help='Quiet-mode (no output to console)',
+                        action='store_true')
     return parser
 
 
-def do_conversion(topology_def, topology_name, output_dir=None, debug=False):
+def do_conversion(topology_def, topology_name, output_dir=None, debug=False,
+                  quiet=False):
     """
     Convert the topology
 
@@ -123,7 +128,7 @@ def do_conversion(topology_def, topology_name, output_dir=None, debug=False):
     new_top.name = topology_name
 
     # Save the new topology
-    save(output_dir, gns3_conv, new_top, topology_def['snapshot'])
+    save(output_dir, gns3_conv, new_top, topology_def['snapshot'], quiet)
 
 
 def topology_abspath(topology):
@@ -210,7 +215,7 @@ def snapshot_name(topo_name):
     return snap_name
 
 
-def save(output_dir, converter, json_topology, snapshot):
+def save(output_dir, converter, json_topology, snapshot, quiet):
     """
     Save the converted topology
 
@@ -218,6 +223,7 @@ def save(output_dir, converter, json_topology, snapshot):
     :param Converter converter: Converter instance
     :param JSONTopology json_topology: JSON topology layout
     :param bool snapshot: Is this a snapshot?
+    :param bool quiet: No console printing
     """
     try:
         old_topology_dir = topology_dirname(converter.topology)
@@ -267,7 +273,7 @@ def save(output_dir, converter, json_topology, snapshot):
         with open(file_path, 'w') as file:
             json.dump(json_topology.get_topology(), file, indent=4,
                       sort_keys=True)
-            if not snapshot:
+            if not snapshot and not quiet:
                 print('Your topology has been converted and can found in:\n'
                       '     %s' % output_dir)
     except OSError as error:
