@@ -76,15 +76,16 @@ class Node(Interfaces):
         slot = 0
 
         for port_number in range(num_ports):
-            port_number += self.port_numbering[port_type]
-            port_name = PORT_TYPES[port_type] + '%s/%s' % (slot, port_number)
+            phy_port_number = port_number + self.port_numbering[port_type]
+            port_name = PORT_TYPES[port_type] + '%s/%s' % (slot,
+                                                           phy_port_number)
             port_temp = {'name': port_name,
                          'id': self.port_id,
                          'port_number': base + port_number,
                          'slot_number': slot}
             ports.append(port_temp)
             self.port_id += 1
-            self.port_numbering[port_type] += 1
+        self.port_numbering[port_type] += num_ports
         self.node['ports'].extend(ports)
 
     def add_slot_ports(self, slot):

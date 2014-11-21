@@ -32,7 +32,7 @@ class TestNode(unittest.TestCase):
         self.app.add_wic('wic0/0', 'WIC-1T')
         self.assertDictEqual(exp_res, self.app.node['properties'])
 
-    def test_add_wic_ports(self):
+    def test_add_wic_ports_wic1t(self):
         exp_res = [{'name': 'Serial0/0',
                     'id': 1,
                     'port_number': 16,
@@ -41,8 +41,46 @@ class TestNode(unittest.TestCase):
         self.app.node['properties']['wic0'] = 'WIC-1T'
 
         self.app.add_wic_ports('wic0')
-        self.assertDictEqual(exp_res[0], self.app.node['ports'][0])
+        self.assertListEqual(exp_res, self.app.node['ports'])
         self.assertEqual(self.app.port_id, 2)
+
+    def test_add_wic_ports_wic2t(self):
+        exp_res = [{'name': 'Serial0/0',
+                    'id': 1,
+                    'port_number': 16,
+                    'slot_number': 0},
+                   {'name': 'Serial0/1',
+                    'id': 2,
+                    'port_number': 17,
+                    'slot_number': 0}]
+
+        self.app.node['properties']['wic0'] = 'WIC-2T'
+
+        self.app.add_wic_ports('wic0')
+        self.assertListEqual(exp_res, self.app.node['ports'])
+        self.assertEqual(self.app.port_id, 3)
+
+    def test_add_wic_ports_wic2t_and_wic1t(self):
+        exp_res = [{'name': 'Serial0/0',
+                    'id': 1,
+                    'port_number': 16,
+                    'slot_number': 0},
+                   {'name': 'Serial0/1',
+                    'id': 2,
+                    'port_number': 17,
+                    'slot_number': 0},
+                   {'name': 'Serial0/2',
+                    'id': 3,
+                    'port_number': 32,
+                    'slot_number': 0}]
+
+        self.app.node['properties']['wic0'] = 'WIC-2T'
+        self.app.node['properties']['wic1'] = 'WIC-1T'
+
+        self.app.add_wic_ports('wic0')
+        self.app.add_wic_ports('wic1')
+        self.assertListEqual(exp_res, self.app.node['ports'])
+        self.assertEqual(self.app.port_id, 4)
 
     def test_add_info_from_hv(self):
         exp_res_node_prop = {'image': 'c3725.image',
