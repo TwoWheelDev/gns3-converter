@@ -1,3 +1,7 @@
+1.1.1   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Fix error numbering of multiple serial ports (Fixes #15)
+
 1.1.0   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Add new custom exception ConvertError
