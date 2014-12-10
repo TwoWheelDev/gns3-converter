@@ -48,6 +48,8 @@ class TestLegacyTopology(unittest.TestCase):
 
         exp_res = {'SHAPE': {'1': {'type': 'ellipse',
                                    'x': 20, 'y': 25,
+                                   'color': '#ffffff',
+                                   'transparency': 0,
                                    'width': 500,
                                    'height': 250,
                                    'border_style': 2}},
