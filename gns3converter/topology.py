@@ -39,6 +39,16 @@ class LegacyTopology():
                     'qemu_id': 1}
 
     @property
+    def artwork(self):
+        """
+        Return the Artwork dict
+
+        :return: artwork dict
+        :rtype: dict
+        """
+        return self.topology['artwork']
+
+    @property
     def hv_id(self):
         """
         Return the Hypervisor ID
@@ -122,7 +132,7 @@ class LegacyTopology():
             pass
         else:
             (item_type, item_id) = item.split(' ')
-            self.topology['artwork'][item_type][item_id] = {}
+            self.artwork[item_type][item_id] = {}
             for s_item in sorted(self.old_top[instance][item]):
                 if self.old_top[instance][item][s_item] is not None:
                     s_detail = self.old_top[instance][item][s_item]
@@ -136,8 +146,15 @@ class LegacyTopology():
                             and s_detail[0] == '"' and s_detail[-1] == '"':
                         s_detail = s_detail[1:-1]
 
-                    self.topology['artwork'][item_type][item_id][s_item] = \
-                        s_detail
+                    if item_type == 'SHAPE' and s_item == 'fill_color':
+                        s_item = 'color'
+
+                    self.artwork[item_type][item_id][s_item] = s_detail
+
+            if item_type == 'SHAPE' and \
+                    'color' not in self.artwork[item_type][item_id]:
+                self.artwork[item_type][item_id]['color'] = '#ffffff'
+                self.artwork[item_type][item_id]['transparency'] = 0
 
     def add_qemu_path(self, instance):
         """
