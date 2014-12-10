@@ -251,6 +251,10 @@ def save(output_dir, converter, json_topology, snapshot, quiet):
         config_err = copy_configs(converter.configs, old_topology_dir,
                                   topology_files_dir)
 
+        # Copy the instructions to the new topology folder
+        if not snapshot:
+            copy_instructions(old_topology_dir, output_dir)
+
         # Move the image files to the new topology folder
         image_err = copy_images(converter.images, topology_files_dir)
 
@@ -330,6 +334,17 @@ def copy_images(images, target):
                 image_err = True
                 logging.error('Unable to find %s' % old_image_file)
     return image_err
+
+
+def copy_instructions(source_project, dest_project):
+    old_instructions = os.path.join(source_project, 'instructions')
+    new_instructions = os.path.join(dest_project, 'instructions')
+
+    if os.path.exists(old_instructions):
+        try:
+            shutil.copytree(old_instructions, new_instructions)
+        except shutil.Error as error:
+            raise ConvertError('Error copying instructions', error)
 
 
 def make_vbox_dirs(max_vbox_id, output_dir, topology_name):
