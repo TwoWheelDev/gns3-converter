@@ -1,3 +1,9 @@
+1.2.0   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Fix converting shapes that don't have fill_color specified, make them
+      transparent (Fixes #18)
+    * Copy instructions to new topology if they are present
+
 1.1.1   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Fix error numbering of multiple serial ports (Fixes #15)
