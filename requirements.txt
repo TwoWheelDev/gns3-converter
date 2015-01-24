@@ -1,3 +1,2 @@
 configobj
-coveralls
 cx_Freeze
