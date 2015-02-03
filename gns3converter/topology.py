@@ -148,6 +148,8 @@ class LegacyTopology():
 
                     if item_type == 'SHAPE' and s_item == 'fill_color':
                         s_item = 'color'
+                    elif s_item == 'rotate':
+                        s_item = 'rotation'
 
                     self.artwork[item_type][item_id][s_item] = s_detail
 
