@@ -222,8 +222,10 @@ class Node(Interfaces):
         if 'hdb_disk_image' not in node_prop and 'image2' in hv_device:
             node_prop['hdb_disk_image'] = hv_device['image2']
         # RAM
-        if 'ram' not in node_prop:
+        if 'ram' not in node_prop and 'ram' in hv_device:
             node_prop['ram'] = hv_device['ram']
+        else:
+            node_prop['ram'] = 256
         # QEMU Options
         if 'options' not in node_prop and 'options' in hv_device:
             node_prop['options'] = hv_device['options']
