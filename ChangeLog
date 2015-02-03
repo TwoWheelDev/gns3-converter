@@ -4,6 +4,7 @@
     * Copy *.png to the base directory of the new project if exists (Fixes #20)
     * Copy VPCS configs to the new multi-host vpcs directory (Fixes #21)
     * Fix shapes and text losing their rotation (Fixes #19)
+    * Add default value for Qemu RAM
 
 1.2.0   Daniel Lintott  <daniel@serverb.co.uk>
 
