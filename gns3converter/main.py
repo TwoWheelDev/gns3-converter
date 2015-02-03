@@ -18,6 +18,7 @@ import shutil
 import argparse
 import logging
 import re
+import glob
 from gns3converter import __version__
 from gns3converter.converter import Converter
 from gns3converter.converterror import ConvertError
@@ -251,6 +252,9 @@ def save(output_dir, converter, json_topology, snapshot, quiet):
         config_err = copy_configs(converter.configs, old_topology_dir,
                                   topology_files_dir)
 
+        # Copy any VPCS configurations to the the new topology
+        copy_vpcs_configs(old_topology_dir, topology_files_dir)
+
         # Copy the instructions to the new topology folder
         if not snapshot:
             copy_instructions(old_topology_dir, output_dir)
@@ -309,6 +313,28 @@ def copy_configs(configs, source, target):
                 config_err = True
                 logging.error('Unable to find %s' % config['old'])
     return config_err
+
+
+def copy_vpcs_configs(source, target):
+    """
+    Copy any VPCS configs to the converted topology
+
+    :param str source: Source topology directory
+    :param str target: Target topology files directory
+    """
+    # Prepare a list of files to copy
+    vpcs_files = glob.glob(os.path.join(source, 'configs', '*.vpc'))
+    vpcs_hist = os.path.join(source, 'configs', 'vpcs.hist')
+    vpcs_config_path = os.path.join(target, 'vpcs', 'multi_host')
+    if os.path.isfile(vpcs_hist):
+        vpcs_files.append(vpcs_hist)
+    # Create the directory tree
+    if len(vpcs_files) > 0:
+        os.makedirs(vpcs_config_path)
+    # Copy the files
+    for old_file in vpcs_files:
+        new_file = os.path.join(vpcs_config_path, os.path.basename(old_file))
+        shutil.copy(old_file, new_file)
 
 
 def copy_images(images, target):
