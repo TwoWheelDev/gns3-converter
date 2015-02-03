@@ -263,7 +263,8 @@ def save(output_dir, converter, json_topology, snapshot, quiet):
             copy_instructions(old_topology_dir, output_dir)
 
         # Move the image files to the new topology folder
-        image_err = copy_images(converter.images, topology_files_dir)
+        image_err = copy_images(converter.images, old_topology_dir,
+                                topology_files_dir)
 
         # Create the vbox working directories
         make_vbox_dirs(json_topology.get_vboxes(), output_dir, topology_name)
@@ -353,11 +354,12 @@ def copy_topology_image(source, target):
         shutil.copy(file, target)
 
 
-def copy_images(images, target):
+def copy_images(images, source, target):
     """
     Copy images to converted topology
 
     :param images: Images to copy
+    :param source: Old Topology Directory
     :param target: Target topology files directory
     :return: True when an image cannot be found, otherwise false
     :rtype: bool
@@ -367,7 +369,11 @@ def copy_images(images, target):
         images_dir = os.path.join(target, 'images')
         os.makedirs(images_dir)
         for image in images:
-            old_image_file = os.path.abspath(image)
+            if os.path.isabs(image):
+                old_image_file = image
+            else:
+                old_image_file = os.path.join(source, image)
+
             new_image_file = os.path.join(images_dir,
                                           os.path.basename(image))
             if os.path.isfile(os.path.abspath(old_image_file)):
