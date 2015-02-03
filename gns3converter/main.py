@@ -255,6 +255,9 @@ def save(output_dir, converter, json_topology, snapshot, quiet):
         # Copy any VPCS configurations to the the new topology
         copy_vpcs_configs(old_topology_dir, topology_files_dir)
 
+        # Copy the topology images to the new topology
+        copy_topology_image(old_topology_dir, output_dir)
+
         # Copy the instructions to the new topology folder
         if not snapshot:
             copy_instructions(old_topology_dir, output_dir)
@@ -335,6 +338,19 @@ def copy_vpcs_configs(source, target):
     for old_file in vpcs_files:
         new_file = os.path.join(vpcs_config_path, os.path.basename(old_file))
         shutil.copy(old_file, new_file)
+
+
+def copy_topology_image(source, target):
+    """
+    Copy any images of the topology to the converted topology
+
+    :param str source: Source topology directory
+    :param str target: Target Directory
+    """
+    files = glob.glob(os.path.join(source, '*.png'))
+
+    for file in files:
+        shutil.copy(file, target)
 
 
 def copy_images(images, target):
