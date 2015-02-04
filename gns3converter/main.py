@@ -329,7 +329,7 @@ def copy_vpcs_configs(source, target):
     # Prepare a list of files to copy
     vpcs_files = glob.glob(os.path.join(source, 'configs', '*.vpc'))
     vpcs_hist = os.path.join(source, 'configs', 'vpcs.hist')
-    vpcs_config_path = os.path.join(target, 'vpcs', 'multi_host')
+    vpcs_config_path = os.path.join(target, 'vpcs', 'multi-host')
     if os.path.isfile(vpcs_hist):
         vpcs_files.append(vpcs_hist)
     # Create the directory tree
