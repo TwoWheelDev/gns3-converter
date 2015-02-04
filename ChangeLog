@@ -1,3 +1,9 @@
+1.2.2   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Correct the path used for multi-host VPCS configs
+        Thanks to rednectar for spotting this.
+    * Fix running tests on Windows
+
 1.2.1   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Fix copying of images when path in topology is relative (Fixes #22)
