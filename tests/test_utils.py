@@ -13,14 +13,27 @@
 # You should have received a copy of the GNU General Public License
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import unittest
+import sys
 from gns3converter import utils
 
 
 class TestUtils(unittest.TestCase):
     def test_fix_path_win(self):
         res = utils.fix_path('configs\R1.cfg')
-        self.assertEqual(res, 'configs/R1.cfg')
+
+        if sys.platform == 'win32':
+            exp_res = 'configs\\R1.cfg'
+        else:
+            exp_res = 'configs/R1.cfg'
+
+        self.assertEqual(res, exp_res)
 
     def test_fix_path_unix(self):
         res = utils.fix_path('configs/R1.cfg')
-        self.assertEqual(res, 'configs/R1.cfg')
+
+        if sys.platform == 'win32':
+            exp_res = 'configs\\R1.cfg'
+        else:
+            exp_res = 'configs/R1.cfg'
+
+        self.assertEqual(res, exp_res)
