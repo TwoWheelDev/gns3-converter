@@ -150,6 +150,7 @@ class LegacyTopology():
                         s_item = 'color'
                     elif s_item == 'rotate':
                         s_item = 'rotation'
+                        s_detail = float(s_detail)
 
                     self.artwork[item_type][item_id][s_item] = s_detail
 

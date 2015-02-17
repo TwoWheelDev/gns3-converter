@@ -43,7 +43,7 @@ class TestLegacyTopology(unittest.TestCase):
             'NOTE 2': {'text': 'f0/0', 'x': 20, 'y': 25,
                        'color': '#1a1a1a', 'interface': 'f0/0'},
             'SHAPE 1': {'type': 'ellipse', 'x': 20, 'y': 25, 'width': 500,
-                        'height': 250, 'border_style': 2}
+                        'height': 250, 'border_style': 2, 'rotate': "45"}
         }
 
         exp_res = {'SHAPE': {'1': {'type': 'ellipse',
@@ -52,7 +52,8 @@ class TestLegacyTopology(unittest.TestCase):
                                    'transparency': 0,
                                    'width': 500,
                                    'height': 250,
-                                   'border_style': 2}},
+                                   'border_style': 2,
+                                   'rotation': 45.0}},
                    'PIXMAP': {},
                    'NOTE': {'1': {'text': 'SomeText',
                                   'x': 20, 'y': 25,
