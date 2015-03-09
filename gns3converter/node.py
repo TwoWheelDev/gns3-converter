@@ -95,14 +95,16 @@ class Node(Interfaces):
         :param str slot: Slot name
         """
         slot_nb = int(slot[4])
-        slot_adapter = None
-        if slot in self.node['properties']:
-            slot_adapter = self.node['properties'][slot]
-        elif self.device_info['model'] == 'c7200':
-            if self.device_info['npe'] == 'npe-g2':
-                slot_adapter = 'C7200-IO-GE-E'
-            else:
-                slot_adapter = 'C7200-IO-2FE'
+        # slot_adapter = None
+        # if slot in self.node['properties']:
+        #     slot_adapter = self.node['properties'][slot]
+        # elif self.device_info['model'] == 'c7200':
+        #     if self.device_info['npe'] == 'npe-g2':
+        #         slot_adapter = 'C7200-IO-GE-E'
+        #     else:
+        #         slot_adapter = 'C7200-IO-2FE'
+
+        slot_adapter = self.node['properties'][slot]
 
         num_ports = ADAPTER_MATRIX[slot_adapter]['ports']
         port_type = ADAPTER_MATRIX[slot_adapter]['type']
@@ -152,11 +154,11 @@ class Node(Interfaces):
         if item in ('aux', 'console'):
             self.node['properties'][item] = device[item]
         elif item.startswith('slot'):
-            if self.device_info['model'] == 'c7200':
-                if item != 'slot0':
-                    self.node['properties'][item] = device[item]
-            else:
-                self.node['properties'][item] = device[item]
+            # if self.device_info['model'] == 'c7200':
+            #     if item != 'slot0':
+            #         self.node['properties'][item] = device[item]
+            # else:
+            self.node['properties'][item] = device[item]
         elif item == 'connections':
             self.connections = device[item]
         elif INTERFACE_RE.search(item) or VBQ_INT_RE.search(item):

@@ -22,7 +22,7 @@ class TestNode(unittest.TestCase):
                     'idlepc': '0x61616161',
                     'ram': '256',
                     'npe': 'npe-400',
-                    'chassis': '3640'}
+                    'chassis': '3640',}
 
         self.app = Node(hv_input, 1)
 
@@ -235,6 +235,7 @@ class TestNode(unittest.TestCase):
 
     def test_add_slot_ports_c7200(self):
         self.app.device_info['model'] = 'c7200'
+        self.app.node['properties']['slot0'] = 'C7200-IO-2FE'
         exp_res = [{'name': 'FastEthernet0/0', 'id': 1, 'port_number': 0,
                     'slot_number': 0},
                    {'name': 'FastEthernet0/1', 'id': 2, 'port_number': 1,
@@ -245,17 +246,6 @@ class TestNode(unittest.TestCase):
         self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
         self.assertDictEqual(self.app.node['ports'][1], exp_res[1])
         self.assertEqual(self.app.port_id, 3)
-
-    def test_add_slot_ports_c7200_npeg2(self):
-        self.app.device_info['model'] = 'c7200'
-        self.app.device_info['npe'] = 'npe-g2'
-        exp_res = [{'name': 'GigabitEthernet0/0', 'id': 1, 'port_number': 0,
-                    'slot_number': 0}]
-
-        self.app.add_slot_ports('slot0')
-        self.assertListEqual(self.app.node['ports'], exp_res)
-        self.assertDictEqual(self.app.node['ports'][0], exp_res[0])
-        self.assertEqual(self.app.port_id, 2)
 
     def test_set_description_router(self):
         self.app.device_info['type'] = 'Router'

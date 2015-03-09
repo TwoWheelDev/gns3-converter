@@ -223,7 +223,9 @@ class Converter(object):
 
                 # Add default ports to 7200 and 3660
                 if tmp_node.device_info['model'] == 'c7200':
-                    tmp_node.add_slot_ports('slot0')
+                    # tmp_node.add_slot_ports('slot0')
+                    # C7200 doesnt have any ports by default
+                    pass
                 elif tmp_node.device_info['model'] == 'c3600' \
                         and tmp_node.device_info['chassis'] == '3660':
                     tmp_node.node['properties']['slot0'] = 'Leopard-2FE'
