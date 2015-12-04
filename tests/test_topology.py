@@ -43,6 +43,7 @@ class TestLegacyTopology(unittest.TestCase):
             'NOTE 2': {'text': 'f0/0', 'x': 20, 'y': 25,
                        'color': '#1a1a1a', 'interface': 'f0/0'},
             'SHAPE 1': {'type': 'ellipse', 'x': 20, 'y': 25, 'width': 500,
+                        'border_width': 4,
                         'height': 250, 'border_style': 2, 'rotate': "45"}
         }
 
@@ -53,6 +54,7 @@ class TestLegacyTopology(unittest.TestCase):
                                    'width': 500,
                                    'height': 250,
                                    'border_style': 2,
+                                   'border_width': 4,
                                    'rotation': 45.0}},
                    'PIXMAP': {},
                    'NOTE': {'1': {'text': 'SomeText',
