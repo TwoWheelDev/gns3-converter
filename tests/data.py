@@ -31,7 +31,7 @@ old_top = {
                            'console_support': None,
                            'console_telnet_server': None, 'symbol': None,
                            'width': None, 'height': None, 'border_style': None,
-                           'color': None, 'text': None},
+                           'color': None, 'text': None, 'border_width': None},
                        'ROUTER R1': {'model': '3660', 'console': 2103,
                                      'aux': 2503, 'cnfg': 'configs/R1.cfg',
                                      'f0/0': 'SW1 2', 'x': -20.0, 'y': -12.0,
@@ -62,7 +62,8 @@ old_top = {
                                      'console_telnet_server': None,
                                      'symbol': None, 'width': None,
                                      'height': None, 'border_style': None,
-                                     'color': None, 'text': None}},
+                                     'color': None, 'text': None,
+                                     'border_width': None}},
     'GNS3-DATA': {'configs': 'configs', 'port': None, 'workingdir': None,
                   'qemupath': None, 'qemuimgpath': None, 'console': None,
                   'aux': None, 'udp': None,
@@ -90,7 +91,8 @@ old_top = {
                              'console_telnet_server': None, 'symbol': None,
                              'width': None, 'height': None,
                              'border_style': None, 'color': '"#ff5500"',
-                             'text': '"Sales VLAN\\n300 Users"'},
+                             'text': '"Sales VLAN\\n300 Users"',
+                             'border_width': None},
                   'NOTE 2': {'model': None, 'console': None, 'aux': None,
                              'cnfg': None, 'x': -220.0, 'y': -121.5, 'z': None,
                              'mac': None, 'image': None, 'image1': None,
@@ -115,7 +117,8 @@ old_top = {
                              'console_telnet_server': None, 'symbol': None,
                              'width': None, 'height': None,
                              'border_style': None, 'color': '"#1a1a1a"',
-                             'text': '"Servers VLAN\\n20 Servers"'}}}
+                             'text': '"Servers VLAN\\n20 Servers"',
+                             'border_width': None}}}
 
 devices = {'R1': {'aux': 2503, 'model': 'c3600', 'console': 2103,
                   'f0/0': 'SW1 2', 'node_id': 1, 'type': 'Router',
