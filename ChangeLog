@@ -1,4 +1,4 @@
-1.2.2   Daniel Lintott  <daniel@serverb.co.uk>
+1.2.3   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Ensure the rotation of a shape is defined as a float,
       rather than string (Fixes #23)
