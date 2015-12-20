@@ -1,3 +1,10 @@
+1.2.4   Daniel Lintott  <daniel@serverb.co.uk>
+
+    * Fix error with adding slot0 on a C7200
+    * Make cx_Freeze option (thanks to boenrobot)
+    * Support border width (thanks to noplay)
+    * Add missing C7200-io-FE (thanks to noplay)
+
 1.2.3   Daniel Lintott  <daniel@serverb.co.uk>
 
     * Ensure the rotation of a shape is defined as a float,
