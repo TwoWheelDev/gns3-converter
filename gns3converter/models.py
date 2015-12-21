@@ -27,7 +27,7 @@ for platform in ('c1700', 'c2600', 'c2691', 'c3725', 'c3745',
     MODEL_MATRIX[platform] = {}
 
 # 1700s have one FE on the motherboard
-for chassis in ('1720', '1721', '1750', '1751', '1760'):
+for chassis in ('1710', '1720', '1721', '1750', '1751', '1760'):
     MODEL_MATRIX['c1700'][chassis] = {'ports': 1, 'type': 'F'}
 
 # 2600s have one or more interfaces on the motherboard
@@ -61,7 +61,7 @@ MODEL_TRANSFORM = {'2691': 'c2691',
                    '3725': 'c3725',
                    '3745': 'c3745',
                    '7200': 'c7200'}
-for chassis in ('1720', '1721', '1750', '1751', '1760'):
+for chassis in ('1710', '1720', '1721', '1750', '1751', '1760'):
     MODEL_TRANSFORM[chassis] = 'c1700'
 for chassis in ('2620', '2621', '2610XM', '2611XM', '2620XM',
                 '2621XM', '2650XM', '2651XM'):
