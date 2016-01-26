@@ -14,7 +14,7 @@
 # along with this program. If not, see <http://www.gnu.org/licenses/>.
 import unittest
 from gns3converter.node import Node
-
+from gns3converter.converterror import ConvertError
 
 class TestNode(unittest.TestCase):
     def setUp(self):
@@ -391,10 +391,29 @@ class TestNode(unittest.TestCase):
         self.assertListEqual(self.app.node['ports'], exp_res)
         self.assertEqual(self.app.port_id, 3)
 
-    @unittest.skip
     def test_add_to_qemu(self):
-        # TODO
-        self.fail()
+        self.app.node['qemu_id'] = 1
+        self.app.device_info['ext_conf'] = 'QemuDevice'
+        self.app.hypervisor['QemuDevice'] = {}
+        self.app.hypervisor['qemu_path'] = '/bin/qemu'
+
+        self.app.add_to_qemu()
+
+        self.assertEqual(self.app.node['properties']['adapters'], 6)
+        self.assertEqual(self.app.node['properties']['console'], 5001)
+        self.assertEqual(self.app.node['properties']['qemu_path'], '/bin/qemu')
+        self.assertEqual(self.app.node['properties']['ram'], 256)
+
+    def test_add_to_qemu_asa(self):
+        self.app.node['qemu_id'] = 1
+        self.app.device_info['ext_conf'] = '5520'
+        self.app.hypervisor['QemuDevice'] = {}
+        self.app.hypervisor['qemu_path'] = '/bin/qemu'
+
+        try:
+            self.app.add_to_qemu()
+        except ConvertError:
+            self.assertRaises(ConvertError)
 
     def test_add_to_virtualbox(self):
         self.app.node['vbox_id'] = 1
