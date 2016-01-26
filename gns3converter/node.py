@@ -22,6 +22,7 @@ from gns3converter.models import MODEL_MATRIX
 from gns3converter.interfaces import INTERFACE_RE, NUMBER_RE, MAPINT_RE, \
     VBQ_INT_RE, Interfaces
 from gns3converter.utils import fix_path
+from gns3converter.converterror import ConvertError
 
 
 class Node(Interfaces):
@@ -213,6 +214,10 @@ class Node(Interfaces):
         global conf section
         """
         device = self.device_info['ext_conf']
+
+        if device == "5520":
+            raise ConvertError("ASA 8 is not supported by GNS3 1.4. You should switch to ASAv. This topology can not be converted.")
+
         node_prop = self.node['properties']
         hv_device = self.hypervisor[device]
         # QEMU HDD Images
