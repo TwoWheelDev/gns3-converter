@@ -43,6 +43,7 @@ class Converter(object):
         self.port_id = 1
         self.links = []
         self.configs = []
+        self.datas = []
         self.images = []
 
         logging.getLogger(__name__)
@@ -229,6 +230,12 @@ class Converter(object):
                 elif tmp_node.device_info['model'] == 'c3600' \
                         and tmp_node.device_info['chassis'] == '3660':
                     tmp_node.node['properties']['slot0'] = 'Leopard-2FE'
+
+                for name in ['rom', 'nvram', 'bootflash', 'disk0']:
+                    self.datas.append({
+                        'old': os.path.join('working', tmp_node.device_info['model'] + '_' + device + '_' + name),
+                        'new':  tmp_node.device_info['model'] + '_i' + str(tmp_node.node['router_id']) + '_' + name
+                    })
 
                 # Calculate the router links
                 tmp_node.calc_device_links()
