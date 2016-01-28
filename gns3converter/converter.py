@@ -231,7 +231,7 @@ class Converter(object):
                         and tmp_node.device_info['chassis'] == '3660':
                     tmp_node.node['properties']['slot0'] = 'Leopard-2FE'
 
-                for name in ['rom', 'nvram', 'bootflash', 'disk0']:
+                for name in ['rom', 'nvram', 'bootflash', 'disk0', 'disk1', 'slot0', 'slot1']:
                     self.datas.append({
                         'old': os.path.join('working', tmp_node.device_info['model'] + '_' + device + '_' + name),
                         'new':  tmp_node.device_info['model'] + '_i' + str(tmp_node.node['router_id']) + '_' + name
