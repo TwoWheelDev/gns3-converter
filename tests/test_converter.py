@@ -72,5 +72,47 @@ class TestConverter(unittest.TestCase):
         res = self.app.generate_notes(notes)
         self.assertListEqual(res, exp_res)
 
+    def test_generate_nodes(self):
+        topology = {}
+        topology['conf'] = [
+            {'sparsemem': True,
+             'ghostios': True,
+             'idlepc': '0x60bec828',
+             'ram': 128,
+             'model': 'c3725',
+             'image': 'c3725-adventerprisek9-mz.124-15.T5.image'
+            }
+        ]
+        topology['devices'] = {
+            'GooglISP': {
+                'model': 'c7200',
+                'aux': 2512,
+                'hx': 19.5,
+                'z': 1.0,
+                'type': 'Router',
+                'node_id': 11,
+                'p1/0': 'VerISPon p1/0',
+                'hv_id': 3,
+                'x': -261.643648086,
+                'cnfg': 'configs\\GooglISP.cfg',
+                'f0/0': 'SW1 f0/0',
+                'y': -419.773080371,
+                'console': 2012,
+                'from': 'ROUTER',
+                'hy': -25.0,
+                'slot0': 'C7200-IO-FE',
+                'desc': 'Router',
+                'slot1': 'PA-POS-OC3'
+            }
+        }
+
+        config = self.app.generate_nodes(topology)
+        self.assertEqual(self.app.datas, [
+            {'new': 'c7200_i11_rom', 'old': 'working/c7200_GooglISP_rom'},
+            {'new': 'c7200_i11_nvram', 'old': 'working/c7200_GooglISP_nvram'},
+            {'new': 'c7200_i11_bootflash', 'old': 'working/c7200_GooglISP_bootflash'},
+            {'new': 'c7200_i11_disk0', 'old': 'working/c7200_GooglISP_disk0'}
+        ])
+
 if __name__ == '__main__':
     unittest.main()

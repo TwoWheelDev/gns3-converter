@@ -252,6 +252,9 @@ def save(output_dir, converter, json_topology, snapshot, quiet):
         config_err = copy_configs(converter.configs, old_topology_dir,
                                   topology_files_dir)
 
+        copy_datas(converter.datas, old_topology_dir,
+                                  topology_files_dir)
+
         # Copy any VPCS configurations to the the new topology
         copy_vpcs_configs(old_topology_dir, topology_files_dir)
 
@@ -290,6 +293,30 @@ def save(output_dir, converter, json_topology, snapshot, quiet):
                       '     %s' % output_dir)
     except OSError as error:
         logging.error(error)
+
+
+def copy_datas(datas, source, target):
+    """
+    Copy dynamips data to converted topology
+
+    :param datas: Configs to copy
+    :param str source: Source topology directory
+    :param str target: Target topology files directory
+    :return: True when a data cannot be found, otherwise false
+    :rtype: bool
+    """
+    data_err = False
+    if len(datas) > 0:
+        data_dir = os.path.join(target, 'dynamips')
+        os.makedirs(data_dir, exist_ok=True)
+        for data in datas:
+            old_data_file = os.path.join(source, data['old'])
+            new_data_file = os.path.join(data_dir, data['new'])
+            if os.path.isfile(old_data_file):
+                # Copy and rename the data
+                shutil.copy(old_data_file, new_data_file)
+    return data_err
+
 
 
 def copy_configs(configs, source, target):
